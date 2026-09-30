@@ -99,7 +99,7 @@ function openProductDetail(id) {
                 <span style="font-size:12px; color:#888;">${p.condition}</span>
                 <h2 style="font-size:20px; margin:5px 0;">${p.title}</h2>
                 <div style="font-size:28px; font-weight:bold; margin:10px 0;">$${p.price.toFixed(2)}</div>
-                <p style="color:#00a650; font-weight:bold;"><i class="fas fa-truck"></i> Envío a Manta gratis en 24hs</p>
+                <p style="color:#00a650; font-weight:bold;"><i class="fas fa-truck"></i> Envío gratis dentro del colegio</p>
                 <p style="margin:15px 0; font-size:14px;">${p.description}</p>
                 <button onclick="addToCart(${p.id})" style="width:100%; background:#3483fa; color:white; border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer;">
                     Añadir al carrito
