@@ -15,7 +15,7 @@ function renderProducts(products) {
             <img src="${p.imageUrl}" alt="${p.title}">
             <div class="card-details">
                 <div class="price">$${p.price.toFixed(2)}</div>
-                ${p.freeShipping ? '<div class="shipping"><i class="fas fa-truck"></i> Envío gratis</div>' : ''}
+                ${p.freeShipping ? '<div class="shipping"><i class="fas fa-truck"></i> Envio gratis dentro del colegio</div>' : ''}
                 <div class="card-title">${p.title}</div>
             </div>
         </div>
