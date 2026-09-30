@@ -8,7 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Base de datos en memoria para desarrollo
+// Base de datos en memoria
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("MercadoLibreDb"));
 
@@ -25,11 +25,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+// Habilitar Swagger siempre (incluso en producción en Render)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MercadoLibre API v1");
+    c.RoutePrefix = string.Empty; // <-- Esto hace que Swagger abra directamente en la raíz "/"
+});
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
