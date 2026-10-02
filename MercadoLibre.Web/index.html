@@ -1,27 +1,37 @@
 <!DOCTYPE html>
 
 <html lang="es">
+
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		
 		<title>TuXI, Crece tu Negocio</title>
 
 		<link rel="stylesheet" href="assets/css/styles.css" />
-		<link rel="stylesheet"
-			  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-		
+
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
 
 	</head>
 
 	<body>
 
-		<div id="notificationContainer" class="notification-container"></div>
-		
-		<!-- =========================
+		<!-- =========================================
+     SISTEMA DE NOTIFICACIONES
+========================================== -->
+
+		<div
+			id="notificationContainer"
+			class="notification-container"
+></div>
+
+
+		<!-- =========================================
      ENCABEZADO
-========================== -->
+========================================== -->
 
 		<header class="ml-header">
 
@@ -30,10 +40,13 @@
 				<div class="header-top">
 
 					<a href="#" class="logo">
+
 						<span class="logo-text">
 							Tu<b>XI</b>
 						</span>
+
 					</a>
+
 
 					<div class="search-bar">
 
@@ -43,21 +56,30 @@
 							placeholder="Buscar productos, marcas y más..."
                 />
 
-						<button type="button" id="searchBtn">
+						<button
+							type="button"
+							id="searchBtn"
+                >
 							<i class="fas fa-search"></i>
 						</button>
 
 					</div>
 
+
 					<div class="header-promo">
+
 						<i class="fas fa-crown"></i>
+
 						Mensajes
+
 					</div>
 
 				</div>
 
 
-				<!-- Navegación -->
+				<!-- =====================================
+             NAVEGACIÓN
+        ====================================== -->
 
 				<nav class="header-nav">
 
@@ -66,9 +88,11 @@
 						<i class="fas fa-map-marker-alt"></i>
 
 						<div>
+
 							<span class="text-bold">
 								Manta 130802
 							</span>
+
 						</div>
 
 					</div>
@@ -79,7 +103,7 @@
 						<li>
 							<a
 								href="#"
-								onclick="filterByCategory('Todos')"
+								onclick="filterByCategory('Todos'); return false;"
                     >
 								Categorías
 							</a>
@@ -88,7 +112,7 @@
 						<li>
 							<a
 								href="#"
-								onclick="filterByCategory('Tecnología')"
+								onclick="filterByCategory('Tecnología'); return false;"
                     >
 								Tecnología
 							</a>
@@ -97,7 +121,7 @@
 						<li>
 							<a
 								href="#"
-								onclick="filterByCategory('Cámaras')"
+								onclick="filterByCategory('Cámaras'); return false;"
                     >
 								Fotografía
 							</a>
@@ -106,7 +130,7 @@
 						<li>
 							<a
 								href="#"
-								onclick="filterByCategory('Deportes')"
+								onclick="filterByCategory('Deportes'); return false;"
                     >
 								Deportes
 							</a>
@@ -115,7 +139,7 @@
 						<li>
 							<a
 								href="#"
-								onclick="filterByCategory('Comida')"
+								onclick="filterByCategory('Comida'); return false;"
                     >
 								Comida
 							</a>
@@ -124,7 +148,7 @@
 						<li>
 							<a
 								href="#"
-								onclick="filterByCategory('Postres')"
+								onclick="filterByCategory('Postres'); return false;"
                     >
 								Postres
 							</a>
@@ -140,25 +164,31 @@
 							class="btn-sell"
 							onclick="openModal('modalPublish')"
                 >
+
 							<i class="fas fa-plus"></i>
+
 							Vender
+
 						</button>
 
 
 						<a
-						href="#"
-						class="nav-link"
-						 id="userMenuBtn"
-											>
+							href="#"
+							class="nav-link"
+							id="userMenuBtn"
+                >
+
 							<i class="fas fa-user-circle"></i>
+
 							Iniciar sesión
+
 						</a>
 
 
 						<a
 							href="#"
 							class="cart-btn"
-							onclick="toggleCart()"
+							onclick="toggleCart(); return false;"
                 >
 
 							<i class="fas fa-shopping-cart"></i>
@@ -182,13 +212,14 @@
 
 
 
-		<!-- =========================
+		<!-- =========================================
      CONTENIDO PRINCIPAL
-========================== -->
+========================================== -->
 
 		<main class="main-container">
 
-			<!-- Banner -->
+
+			<!-- BANNER PRINCIPAL -->
 
 			<section class="hero-banner">
 
@@ -203,12 +234,14 @@
 			</section>
 
 
-			<!-- Filtros y productos -->
+			<!-- =====================================
+         FILTROS Y PRODUCTOS
+    ====================================== -->
 
 			<div class="content-layout">
 
 
-				<!-- Filtros -->
+				<!-- FILTROS -->
 
 				<aside class="sidebar-filters">
 
@@ -303,7 +336,7 @@
 
 
 
-				<!-- Productos -->
+				<!-- PRODUCTOS -->
 
 				<section class="products-grid-section">
 
@@ -349,9 +382,9 @@
 
 
 
-		<!-- =========================
+		<!-- =========================================
      CARRITO
-========================== -->
+========================================== -->
 
 		<div
 			id="cartDrawer"
@@ -361,8 +394,11 @@
 			<div class="drawer-header">
 
 				<h3>
+
 					<i class="fas fa-shopping-cart"></i>
+
 					Tu Carrito
+
 				</h3>
 
 
@@ -371,7 +407,7 @@
 					onclick="toggleCart()"
 					class="close-btn"
         >
-					×;
+					;
 				</button>
 
 			</div>
@@ -413,9 +449,9 @@
 
 
 
-		<!-- =========================
+		<!-- =========================================
      MODAL PUBLICAR PRODUCTO
-========================== -->
+========================================== -->
 
 		<div
 			id="modalPublish"
@@ -428,7 +464,7 @@
 					class="close-modal"
 					onclick="closeModal('modalPublish')"
         >
-					×;
+					;
 				</span>
 
 
@@ -588,9 +624,9 @@
 
 
 
-		<!-- =========================
+		<!-- =========================================
      MODAL DETALLE + CHAT
-========================== -->
+========================================== -->
 
 		<div
 			id="modalDetail"
@@ -603,7 +639,7 @@
 					class="close-modal"
 					onclick="closeModal('modalDetail')"
         >
-					×;
+					;
 				</span>
 
 
@@ -659,27 +695,22 @@
 
 
 
-		<!-- =========================
-     JAVASCRIPT
-========================== -->
-
-		<!-- =========================
+		<!-- =========================================
      MODAL INICIO DE SESIÓN
-========================== -->
+========================================== -->
 
 		<div
 			id="modalLogin"
 			class="modal"
 >
 
-			
 			<div class="modal-content">
 
 				<span
 					class="close-modal"
 					onclick="closeModal('modalLogin')"
-    >
-					×
+        >
+					;
 				</span>
 
 
@@ -691,7 +722,7 @@
 				<form
 					id="loginForm"
 					onsubmit="loginUser(event)"
-    >
+        >
 
 					<div class="form-group">
 
@@ -699,12 +730,13 @@
 							Correo electrónico
 						</label>
 
+
 						<input
 							type="email"
 							id="loginEmail"
 							placeholder="ejemplo@correo.com"
 							required=""
-            />
+                />
 
 					</div>
 
@@ -715,12 +747,13 @@
 							Contraseña
 						</label>
 
+
 						<input
 							type="password"
 							id="loginPassword"
 							placeholder="Tu contraseña"
 							required=""
-            />
+                />
 
 					</div>
 
@@ -728,7 +761,7 @@
 					<button
 						type="submit"
 						class="btn-submit"
-        >
+            >
 						Iniciar sesión
 					</button>
 
@@ -736,43 +769,44 @@
 
 
 				<p>
+
 					¿No tienes una cuenta?
 
 					<a
 						href="#"
 						onclick="
-                closeModal('modalLogin');
-                openModal('modalRegister');
-                return false;
-            "
-        >
+                    closeModal('modalLogin');
+                    openModal('modalRegister');
+                    return false;
+                "
+            >
 						Regístrate aquí
 					</a>
 
 				</p>
 
 			</div>
-			
 
 		</div>
 
-		<!-- =========================
+
+
+		<!-- =========================================
      MODAL REGISTRO
-========================== -->
+========================================== -->
 
 		<div
 			id="modalRegister"
 			class="modal"
 >
 
-			
 			<div class="modal-content">
 
 				<span
 					class="close-modal"
 					onclick="closeModal('modalRegister')"
-    >
-					×
+        >
+					;
 				</span>
 
 
@@ -784,7 +818,7 @@
 				<form
 					id="registerForm"
 					onsubmit="registerUser(event)"
-    >
+        >
 
 					<div class="form-group">
 
@@ -792,12 +826,13 @@
 							Nombre completo
 						</label>
 
+
 						<input
 							type="text"
 							id="registerName"
 							placeholder="Tu nombre"
 							required=""
-            />
+                />
 
 					</div>
 
@@ -808,12 +843,13 @@
 							Correo electrónico
 						</label>
 
+
 						<input
 							type="email"
 							id="registerEmail"
 							placeholder="ejemplo@correo.com"
 							required=""
-            />
+                />
 
 					</div>
 
@@ -824,12 +860,13 @@
 							Contraseña
 						</label>
 
+
 						<input
 							type="password"
 							id="registerPassword"
 							placeholder="Crea una contraseña"
 							required=""
-            />
+                />
 
 					</div>
 
@@ -837,7 +874,7 @@
 					<button
 						type="submit"
 						class="btn-submit"
-        >
+            >
 						Crear cuenta
 					</button>
 
@@ -851,56 +888,82 @@
 					<a
 						href="#"
 						onclick="
-                closeModal('modalRegister');
-                openModal('modalLogin');
-                return false;
-            "
-        >
+                    closeModal('modalRegister');
+                    openModal('modalLogin');
+                    return false;
+                "
+            >
 						Inicia sesión
 					</a>
 
 				</p>
 
 			</div>
-			
 
 		</div>
 
 
+
+		<!-- =========================================
+     JAVASCRIPT
+========================================== -->
+
 		<script src="js/products.js"></script>
+
 		<script src="js/cart.js"></script>
+
 		<script src="js/chat.js"></script>
+
 		<script src="js/auth.js"></script>
+
 		<script src="js/app.js"></script>
 
-		<!-- Modal de confirmación de cierre de sesión -->
-		<div id="logoutModal" class="custom-confirm-overlay">
+
+
+		<!-- =========================================
+     MODAL PERSONALIZADO DE CERRAR SESIÓN
+========================================== -->
+
+		<div
+			id="logoutModal"
+			class="custom-confirm-overlay"
+>
 
 			<div class="custom-confirm-box">
 
 				<div class="confirm-icon">
+
 					<i class="fas fa-user-check"></i>
+
 				</div>
 
-				<h3>Sesión iniciada</h3>
+
+				<h3>
+					Sesión iniciada
+				</h3>
+
 
 				<p id="logoutMessage">
 					¿Quieres cerrar sesión?
 				</p>
+
 
 				<div class="confirm-buttons">
 
 					<button
 						type="button"
 						class="confirm-cancel"
-						onclick="closeLogoutModal()">
+						onclick="closeLogoutModal()"
+            >
 						Cancelar
 					</button>
+
 
 					<button
 						type="button"
 						class="confirm-logout"
-						onclick="confirmLogout()">
+						onclick="confirmLogout()"
+            >
 						Cerrar sesión
 					</button>
 
@@ -909,7 +972,7 @@
 			</div>
 
 		</div>
-		
+
 	</body>
 
 </html>

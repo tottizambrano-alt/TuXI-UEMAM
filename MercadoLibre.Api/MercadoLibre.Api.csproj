@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 dotn<Project Sdk="Microsoft.NET.Sdk.Web">
+=======
+<Project Sdk="Microsoft.NET.Sdk.Web">
+>>>>>>> 8272aec45483f17f108c1363394b294c9f0410ad
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
