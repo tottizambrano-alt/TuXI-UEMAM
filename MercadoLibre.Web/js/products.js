@@ -1,4 +1,8 @@
-let initialProducts = [
+// ==================================================
+// PRODUCTOS INICIALES
+// ==================================================
+
+const initialProducts = [
     {
         id: 1,
         title: "Cámara Mirrorless Sony Alpha A6700 con Lente Sigma 24-70mm f/2.8",
@@ -34,19 +38,78 @@ let initialProducts = [
     }
 ];
 
+
+// ==================================================
+// OBTENER PRODUCTOS
+// ==================================================
+
 function getProducts() {
-    const stored = localStorage.getItem('ml_products');
+    const stored = localStorage.getItem("ml_products");
+
+    // Si no existen productos guardados,
+    // crear los productos iniciales.
     if (!stored) {
-        localStorage.setItem('ml_products', JSON.stringify(initialProducts));
-        return initialProducts;
+        const products = [...initialProducts];
+
+        localStorage.setItem(
+            "ml_products",
+            JSON.stringify(products)
+        );
+
+        return products;
     }
-    return JSON.parse(stored);
+
+    // Intentar leer los productos guardados.
+    try {
+        const products = JSON.parse(stored);
+
+        // Verificar que realmente sea un arreglo.
+        if (!Array.isArray(products)) {
+            throw new Error("Los productos guardados no son un arreglo.");
+        }
+
+        return products;
+
+    } catch (error) {
+
+        console.error(
+            "Error leyendo los productos guardados:",
+            error
+        );
+
+        // Si los datos están dañados,
+        // restaurar los productos iniciales.
+        const products = [...initialProducts];
+
+        localStorage.setItem(
+            "ml_products",
+            JSON.stringify(products)
+        );
+
+        return products;
+    }
 }
 
+
+// ==================================================
+// GUARDAR NUEVO PRODUCTO
+// ==================================================
+
 function saveProduct(product) {
+
     const products = getProducts();
+
+    // Crear un ID único basado en la fecha.
     product.id = Date.now();
+
+    // Agregar el producto.
     products.push(product);
-    localStorage.setItem('ml_products', JSON.stringify(products));
-    renderProducts(products);
+
+    // Guardar nuevamente en localStorage.
+    localStorage.setItem(
+        "ml_products",
+        JSON.stringify(products)
+    );
+
+    return product;
 }

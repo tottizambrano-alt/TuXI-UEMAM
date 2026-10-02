@@ -1,45 +1,66 @@
 <!DOCTYPE html>
-
 <html lang="es">
 
 	<head>
+
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+    />
 
 		<title>TuXI, Crece tu Negocio</title>
 
-		<link rel="stylesheet" href="assets/css/styles.css" />
+		<link
+			rel="stylesheet"
+			href="assets/css/styles.css"
+    />
 
 		<link
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-/>
+    />
 
 	</head>
 
+
 	<body>
 
+
 		<!-- =========================================
-     SISTEMA DE NOTIFICACIONES
-========================================== -->
+         SISTEMA DE NOTIFICACIONES
+    ========================================== -->
 
 		<div
 			id="notificationContainer"
 			class="notification-container"
-></div>
+    ></div>
+
 
 
 		<!-- =========================================
-     ENCABEZADO
-========================================== -->
+         ENCABEZADO
+    ========================================== -->
 
 		<header class="ml-header">
 
 			<div class="header-container">
 
+
+				<!-- =====================================
+                 PARTE SUPERIOR
+            ====================================== -->
+
 				<div class="header-top">
 
-					<a href="#" class="logo">
+
+					<!-- LOGO -->
+
+					<a
+						href="#"
+						class="logo"
+                >
 
 						<span class="logo-text">
 							Tu<b>XI</b>
@@ -48,23 +69,31 @@
 					</a>
 
 
+
+					<!-- BUSCADOR -->
+
 					<div class="search-bar">
 
 						<input
 							type="text"
 							id="searchInput"
 							placeholder="Buscar productos, marcas y más..."
-                />
+                    />
 
 						<button
 							type="button"
 							id="searchBtn"
-                >
+                    >
+
 							<i class="fas fa-search"></i>
+
 						</button>
 
 					</div>
 
+
+
+					<!-- MENSAJES -->
 
 					<div class="header-promo">
 
@@ -74,14 +103,19 @@
 
 					</div>
 
+
 				</div>
 
 
+
 				<!-- =====================================
-             NAVEGACIÓN
-        ====================================== -->
+                 NAVEGACIÓN
+            ====================================== -->
 
 				<nav class="header-nav">
+
+
+					<!-- DIRECCIÓN -->
 
 					<div class="nav-address">
 
@@ -98,72 +132,98 @@
 					</div>
 
 
+
+					<!-- CATEGORÍAS -->
+
 					<ul class="nav-categories">
 
 						<li>
+
 							<a
 								href="#"
 								onclick="filterByCategory('Todos'); return false;"
-                    >
+                        >
 								Categorías
 							</a>
+
 						</li>
 
+
 						<li>
+
 							<a
 								href="#"
 								onclick="filterByCategory('Tecnología'); return false;"
-                    >
+                        >
 								Tecnología
 							</a>
+
 						</li>
 
+
 						<li>
+
 							<a
 								href="#"
 								onclick="filterByCategory('Cámaras'); return false;"
-                    >
+                        >
 								Fotografía
 							</a>
+
 						</li>
 
+
 						<li>
+
 							<a
 								href="#"
 								onclick="filterByCategory('Deportes'); return false;"
-                    >
+                        >
 								Deportes
 							</a>
+
 						</li>
 
+
 						<li>
+
 							<a
 								href="#"
 								onclick="filterByCategory('Comida'); return false;"
-                    >
+                        >
 								Comida
 							</a>
+
 						</li>
 
+
 						<li>
+
 							<a
 								href="#"
 								onclick="filterByCategory('Postres'); return false;"
-                    >
+                        >
 								Postres
 							</a>
+
 						</li>
 
 					</ul>
 
 
+
+					<!-- ACCIONES DEL USUARIO -->
+
 					<div class="nav-user-actions">
+
+
+						<!-- VENDER -->
 
 						<button
 							type="button"
 							class="btn-sell"
 							onclick="openModal('modalPublish')"
-                >
+                    >
 
 							<i class="fas fa-plus"></i>
 
@@ -172,35 +232,105 @@
 						</button>
 
 
-						<a
-							href="#"
-							class="nav-link"
-							id="userMenuBtn"
-                >
 
-							<i class="fas fa-user-circle"></i>
+						<!-- USUARIO -->
 
-							Iniciar sesión
+						<div class="user-menu-container">
+							<button
+								type="button"
+								class="nav-link user-menu-button"
+								id="userMenuBtn"
+    >
+								<i class="fas fa-user-circle"></i>
+								<span id="userMenuName">Usuario</span>
+								<i class="fas fa-chevron-down user-arrow"></i>
+							</button>
 
-						</a>
+							<div
+								class="user-dropdown"
+								id="userDropdown"
+    >
+								<div class="user-dropdown-header">
+									<i class="fas fa-user-circle"></i>
 
+									<div>
+										<strong id="dropdownUserName">Usuario</strong>
+										<small>Mi cuenta</small>
+									</div>
+								</div>
+
+								<div class="user-dropdown-divider"></div>
+
+								<button
+									type="button"
+									class="user-dropdown-item"
+									onclick="openUserSection('cart')"
+        >
+									<i class="fas fa-shopping-cart"></i>
+									<span>Mi carrito</span>
+								</button>
+
+								<button
+									type="button"
+									class="user-dropdown-item"
+									onclick="openUserSection('chat')"
+        >
+									<i class="fas fa-comments"></i>
+									<span>Mis chats</span>
+								</button>
+
+								<button
+									type="button"
+									class="user-dropdown-item"
+									onclick="openUserSection('products')"
+        >
+									<i class="fas fa-box"></i>
+									<span>Mis publicaciones</span>
+								</button>
+
+								<button
+									type="button"
+									class="user-dropdown-item"
+									onclick="openUserSection('profile')"
+        >
+									<i class="fas fa-user"></i>
+									<span>Mi perfil</span>
+								</button>
+
+								<div class="user-dropdown-divider"></div>
+
+								<button
+									type="button"
+									class="user-dropdown-item logout-item"
+									onclick="logoutUser()"
+        >
+									<i class="fas fa-right-from-bracket"></i>
+									<span>Cerrar sesión</span>
+								</button>
+							</div>
+						</div>
+
+
+
+						<!-- CARRITO -->
 
 						<a
 							href="#"
 							class="cart-btn"
 							onclick="toggleCart(); return false;"
-                >
+                    >
 
 							<i class="fas fa-shopping-cart"></i>
 
 							<span
 								id="cartBadge"
 								class="badge"
-                    >
+                        >
 								0
 							</span>
 
 						</a>
+
 
 					</div>
 
@@ -213,13 +343,15 @@
 
 
 		<!-- =========================================
-     CONTENIDO PRINCIPAL
-========================================== -->
+         CONTENIDO PRINCIPAL
+    ========================================== -->
 
 		<main class="main-container">
 
 
-			<!-- BANNER PRINCIPAL -->
+			<!-- =====================================
+             BANNER PRINCIPAL
+        ====================================== -->
 
 			<section class="hero-banner">
 
@@ -234,14 +366,17 @@
 			</section>
 
 
+
 			<!-- =====================================
-         FILTROS Y PRODUCTOS
-    ====================================== -->
+             FILTROS Y PRODUCTOS
+        ====================================== -->
 
 			<div class="content-layout">
 
 
-				<!-- FILTROS -->
+				<!-- =================================
+                 FILTROS
+            ================================== -->
 
 				<aside class="sidebar-filters">
 
@@ -249,6 +384,9 @@
 						Filtros
 					</h3>
 
+
+
+					<!-- CONDICIÓN -->
 
 					<div class="filter-group">
 
@@ -261,7 +399,7 @@
 							type="button"
 							class="filter-btn active"
 							onclick="filterCondition('all')"
-                >
+                    >
 							Todos
 						</button>
 
@@ -270,7 +408,7 @@
 							type="button"
 							class="filter-btn"
 							onclick="filterCondition('Nuevo')"
-                >
+                    >
 							Nuevos
 						</button>
 
@@ -279,12 +417,15 @@
 							type="button"
 							class="filter-btn"
 							onclick="filterCondition('Usado')"
-                >
+                    >
 							Usados
 						</button>
 
 					</div>
 
+
+
+					<!-- ENVÍO -->
 
 					<div class="filter-group">
 
@@ -299,7 +440,7 @@
 								type="checkbox"
 								id="freeShippingCheck"
 								onchange="applyFilters()"
-                    />
+                        />
 
 							Entrega gratis dentro del colegio
 
@@ -307,6 +448,9 @@
 
 					</div>
 
+
+
+					<!-- RANGO DE PRECIO -->
 
 					<div class="filter-group">
 
@@ -320,7 +464,7 @@
 							id="minPrice"
 							placeholder="Mínimo"
 							oninput="applyFilters()"
-                />
+                    />
 
 
 						<input
@@ -328,7 +472,7 @@
 							id="maxPrice"
 							placeholder="Máximo"
 							oninput="applyFilters()"
-                />
+                    />
 
 					</div>
 
@@ -336,9 +480,14 @@
 
 
 
-				<!-- PRODUCTOS -->
+				<!-- =================================
+                 PRODUCTOS
+            ================================== -->
 
 				<section class="products-grid-section">
+
+
+					<!-- CABECERA -->
 
 					<div class="grid-header">
 
@@ -350,15 +499,17 @@
 						<select
 							id="sortSelect"
 							onchange="applyFilters()"
-                >
+                    >
 
 							<option value="relevance">
 								Más relevantes
 							</option>
 
+
 							<option value="price-asc">
 								Menor precio
 							</option>
+
 
 							<option value="price-desc">
 								Mayor precio
@@ -369,10 +520,14 @@
 					</div>
 
 
+
+					<!-- GRID -->
+
 					<div
 						class="products-grid"
 						id="productsGrid"
-            ></div>
+                ></div>
+
 
 				</section>
 
@@ -383,13 +538,14 @@
 
 
 		<!-- =========================================
-     CARRITO
-========================================== -->
+         CARRITO
+    ========================================== -->
 
 		<div
 			id="cartDrawer"
 			class="cart-drawer"
->
+    >
+
 
 			<div class="drawer-header">
 
@@ -406,17 +562,19 @@
 					type="button"
 					onclick="toggleCart()"
 					class="close-btn"
-        >
-					;
+            >
+					×
 				</button>
 
 			</div>
 
 
+
 			<div
 				id="cartItemsList"
 				class="drawer-body"
-    ></div>
+        ></div>
+
 
 
 			<div class="drawer-footer">
@@ -439,7 +597,7 @@
 					type="button"
 					class="btn-checkout"
 					onclick="checkout()"
-        >
+            >
 					Comprar ahora
 				</button>
 
@@ -450,22 +608,24 @@
 
 
 		<!-- =========================================
-     MODAL PUBLICAR PRODUCTO
-========================================== -->
+         MODAL PUBLICAR PRODUCTO
+    ========================================== -->
 
 		<div
 			id="modalPublish"
 			class="modal"
->
+    >
 
 			<div class="modal-content">
+
 
 				<span
 					class="close-modal"
 					onclick="closeModal('modalPublish')"
-        >
-					;
+            >
+					×
 				</span>
+
 
 
 				<h2>
@@ -473,10 +633,14 @@
 				</h2>
 
 
+
 				<form
 					id="publishForm"
 					onsubmit="publishProduct(event)"
-        >
+            >
+
+
+					<!-- TÍTULO -->
 
 					<div class="form-group">
 
@@ -490,10 +654,13 @@
 							id="pubTitle"
 							required=""
 							placeholder="Ej. Cámara Sony A6700 4K"
-                />
+                    />
 
 					</div>
 
+
+
+					<!-- CATEGORÍA -->
 
 					<div class="form-group">
 
@@ -505,23 +672,27 @@
 						<select
 							id="pubCategory"
 							required=""
-                >
+                    >
 
 							<option value="Tecnología">
 								Tecnología
 							</option>
 
+
 							<option value="Cámaras">
 								Cámaras y Fotografía
 							</option>
+
 
 							<option value="Deportes">
 								Deportes
 							</option>
 
+
 							<option value="Comida">
 								Comida
 							</option>
+
 
 							<option value="Postres">
 								Postres
@@ -532,7 +703,11 @@
 					</div>
 
 
+
+					<!-- PRECIO + CONDICIÓN -->
+
 					<div class="form-row">
+
 
 						<div class="form-group">
 
@@ -546,9 +721,10 @@
 								id="pubPrice"
 								step="0.01"
 								required=""
-                    />
+                        />
 
 						</div>
+
 
 
 						<div class="form-group">
@@ -558,11 +734,14 @@
 							</label>
 
 
-							<select id="pubCondition">
+							<select
+								id="pubCondition"
+                        >
 
 								<option value="Nuevo">
 									Nuevo
 								</option>
+
 
 								<option value="Usado">
 									Usado
@@ -572,8 +751,12 @@
 
 						</div>
 
+
 					</div>
 
+
+
+					<!-- IMAGEN -->
 
 					<div class="form-group">
 
@@ -588,10 +771,13 @@
 							required=""
 							placeholder="https://..."
 							value="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500"
-                />
+                    />
 
 					</div>
 
+
+
+					<!-- DESCRIPCIÓN -->
 
 					<div class="form-group">
 
@@ -604,17 +790,21 @@
 							id="pubDescription"
 							rows="3"
 							required=""
-                ></textarea>
+                    ></textarea>
 
 					</div>
 
 
+
+					<!-- BOTÓN -->
+
 					<button
 						type="submit"
 						class="btn-submit"
-            >
+                >
 						Publicar Ahora
 					</button>
+
 
 				</form>
 
@@ -625,32 +815,38 @@
 
 
 		<!-- =========================================
-     MODAL DETALLE + CHAT
-========================================== -->
+         MODAL DETALLE + CHAT
+    ========================================== -->
 
 		<div
 			id="modalDetail"
 			class="modal"
->
+    >
 
 			<div class="modal-content large">
+
 
 				<span
 					class="close-modal"
 					onclick="closeModal('modalDetail')"
-        >
-					;
+            >
+					×
 				</span>
+
 
 
 				<div
 					id="productDetailBody"
 					class="detail-grid"
-        ></div>
+            ></div>
+
 
 
 				<hr class="divider" />
 
+
+
+				<!-- PREGUNTAS -->
 
 				<div class="questions-section">
 
@@ -659,19 +855,20 @@
 					</h3>
 
 
+
 					<div class="ask-box">
 
 						<input
 							type="text"
 							id="questionInput"
 							placeholder="Escribe tu pregunta al vendedor..."
-                />
+                    />
 
 
 						<button
 							type="button"
 							onclick="sendQuestion()"
-                >
+                    >
 
 							<i class="fas fa-paper-plane"></i>
 
@@ -682,10 +879,11 @@
 					</div>
 
 
+
 					<div
 						id="chatMessages"
 						class="chat-messages-list"
-            ></div>
+                ></div>
 
 				</div>
 
@@ -696,240 +894,42 @@
 
 
 		<!-- =========================================
-     MODAL INICIO DE SESIÓN
-========================================== -->
+         JAVASCRIPT
+    ========================================== -->
 
-		<div
-			id="modalLogin"
-			class="modal"
->
-
-			<div class="modal-content">
-
-				<span
-					class="close-modal"
-					onclick="closeModal('modalLogin')"
-        >
-					;
-				</span>
-
-
-				<h2>
-					Iniciar sesión
-				</h2>
-
-
-				<form
-					id="loginForm"
-					onsubmit="loginUser(event)"
-        >
-
-					<div class="form-group">
-
-						<label for="loginEmail">
-							Correo electrónico
-						</label>
-
-
-						<input
-							type="email"
-							id="loginEmail"
-							placeholder="ejemplo@correo.com"
-							required=""
-                />
-
-					</div>
-
-
-					<div class="form-group">
-
-						<label for="loginPassword">
-							Contraseña
-						</label>
-
-
-						<input
-							type="password"
-							id="loginPassword"
-							placeholder="Tu contraseña"
-							required=""
-                />
-
-					</div>
-
-
-					<button
-						type="submit"
-						class="btn-submit"
-            >
-						Iniciar sesión
-					</button>
-
-				</form>
-
-
-				<p>
-
-					¿No tienes una cuenta?
-
-					<a
-						href="#"
-						onclick="
-                    closeModal('modalLogin');
-                    openModal('modalRegister');
-                    return false;
-                "
-            >
-						Regístrate aquí
-					</a>
-
-				</p>
-
-			</div>
-
-		</div>
-
-
-
-		<!-- =========================================
-     MODAL REGISTRO
-========================================== -->
-
-		<div
-			id="modalRegister"
-			class="modal"
->
-
-			<div class="modal-content">
-
-				<span
-					class="close-modal"
-					onclick="closeModal('modalRegister')"
-        >
-					;
-				</span>
-
-
-				<h2>
-					Crear una cuenta
-				</h2>
-
-
-				<form
-					id="registerForm"
-					onsubmit="registerUser(event)"
-        >
-
-					<div class="form-group">
-
-						<label for="registerName">
-							Nombre completo
-						</label>
-
-
-						<input
-							type="text"
-							id="registerName"
-							placeholder="Tu nombre"
-							required=""
-                />
-
-					</div>
-
-
-					<div class="form-group">
-
-						<label for="registerEmail">
-							Correo electrónico
-						</label>
-
-
-						<input
-							type="email"
-							id="registerEmail"
-							placeholder="ejemplo@correo.com"
-							required=""
-                />
-
-					</div>
-
-
-					<div class="form-group">
-
-						<label for="registerPassword">
-							Contraseña
-						</label>
-
-
-						<input
-							type="password"
-							id="registerPassword"
-							placeholder="Crea una contraseña"
-							required=""
-                />
-
-					</div>
-
-
-					<button
-						type="submit"
-						class="btn-submit"
-            >
-						Crear cuenta
-					</button>
-
-				</form>
-
-
-				<p>
-
-					¿Ya tienes una cuenta?
-
-					<a
-						href="#"
-						onclick="
-                    closeModal('modalRegister');
-                    openModal('modalLogin');
-                    return false;
-                "
-            >
-						Inicia sesión
-					</a>
-
-				</p>
-
-			</div>
-
-		</div>
-
-
-
-		<!-- =========================================
-     JAVASCRIPT
-========================================== -->
+		<!-- PRODUCTOS -->
 
 		<script src="js/products.js"></script>
 
+
+		<!-- CARRITO -->
+
 		<script src="js/cart.js"></script>
+
+
+		<!-- CHAT -->
 
 		<script src="js/chat.js"></script>
 
-		<script src="js/auth.js"></script>
+
+		<!-- APP -->
 
 		<script src="js/app.js"></script>
 
 
 
 		<!-- =========================================
-     MODAL PERSONALIZADO DE CERRAR SESIÓN
-========================================== -->
+         MODAL PERSONALIZADO
+         CERRAR SESIÓN
+    ========================================== -->
 
 		<div
 			id="logoutModal"
 			class="custom-confirm-overlay"
->
+    >
 
 			<div class="custom-confirm-box">
+
 
 				<div class="confirm-icon">
 
@@ -938,9 +938,11 @@
 				</div>
 
 
+
 				<h3>
 					Sesión iniciada
 				</h3>
+
 
 
 				<p id="logoutMessage">
@@ -948,13 +950,15 @@
 				</p>
 
 
+
 				<div class="confirm-buttons">
+
 
 					<button
 						type="button"
 						class="confirm-cancel"
 						onclick="closeLogoutModal()"
-            >
+                >
 						Cancelar
 					</button>
 
@@ -963,15 +967,18 @@
 						type="button"
 						class="confirm-logout"
 						onclick="confirmLogout()"
-            >
+                >
 						Cerrar sesión
 					</button>
+
 
 				</div>
 
 			</div>
 
 		</div>
+
+
 
 	</body>
 

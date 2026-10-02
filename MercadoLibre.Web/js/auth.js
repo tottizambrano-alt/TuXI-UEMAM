@@ -1,690 +1,525 @@
-const API_URL = "http://localhost:5000/api/Auth";
-
-// =====================================================
-// SISTEMA DE NOTIFICACIONES
-// =====================================================
-
-function showNotification(title, message, type = "info", duration = 4000) {
+const API_URL =
+    "http://localhost:5000/api/Auth";
 
 
-const container =
-    document.getElementById("notificationContainer");
+// ==================================================
+// MOSTRAR LOGIN
+// ==================================================
 
-if (!container) {
-    console.error("No existe notificationContainer en index.html");
-    return;
-}
+function showLogin() {
 
-let icon = "fas fa-info-circle";
-
-if (type === "success") {
-    icon = "fas fa-check";
-}
-
-if (type === "error") {
-    icon = "fas fa-times";
-}
-
-if (type === "warning") {
-    icon = "fas fa-exclamation";
-}
-
-const notification =
-    document.createElement("div");
-
-notification.className =
-    `tuxi-notification ${type}`;
-
-notification.innerHTML = `
-    <div class="notification-icon">
-        <i class="${icon}"></i>
-    </div>
-
-    <div class="notification-content">
-
-        <div class="notification-title">
-            ${title}
-        </div>
-
-        <div class="notification-message">
-            ${message}
-        </div>
-
-    </div>
-
-    <button
-        class="notification-close"
-        type="button"
-        aria-label="Cerrar">
-
-        <i class="fas fa-times"></i>
-
-    </button>
-`;
-
-container.appendChild(notification);
-
-
-// Animación de entrada
-
-requestAnimationFrame(() => {
-
-    notification.classList.add("show");
-
-});
-
-
-// Botón de cerrar
-
-const closeButton =
-    notification.querySelector(".notification-close");
-
-closeButton.addEventListener(
-    "click",
-    () => {
-
-        removeNotification(notification);
-
-    }
-);
-
-
-// Desaparecer automáticamente
-
-setTimeout(() => {
-
-    removeNotification(notification);
-
-}, duration);
-
-
-}
-
-// =====================================================
-// ELIMINAR NOTIFICACIÓN
-// =====================================================
-
-function removeNotification(notification) {
-
-
-if (!notification) {
-    return;
-}
-
-notification.classList.remove("show");
-
-setTimeout(() => {
-
-    if (notification.parentNode) {
-
-        notification.parentNode.removeChild(
-            notification
+    const loginSection =
+        document.getElementById(
+            "loginSection"
         );
 
+    const registerSection =
+        document.getElementById(
+            "registerSection"
+        );
+
+
+    if (
+        !loginSection ||
+        !registerSection
+    ) {
+
+        return;
+
     }
 
-}, 350);
 
+    registerSection.classList.add(
+        "hidden"
+    );
+
+    loginSection.classList.remove(
+        "hidden"
+    );
+
+    clearMessages();
 
 }
 
-// =====================================================
+
+// ==================================================
+// MOSTRAR REGISTRO
+// ==================================================
+
+function showRegister() {
+
+    const loginSection =
+        document.getElementById(
+            "loginSection"
+        );
+
+    const registerSection =
+        document.getElementById(
+            "registerSection"
+        );
+
+
+    if (
+        !loginSection ||
+        !registerSection
+    ) {
+
+        return;
+
+    }
+
+
+    loginSection.classList.add(
+        "hidden"
+    );
+
+    registerSection.classList.remove(
+        "hidden"
+    );
+
+    clearMessages();
+
+}
+
+
+// ==================================================
 // REGISTRO
-// =====================================================
+// ==================================================
 
 async function registerUser(event) {
 
-
-event.preventDefault();
-
-
-const nameElement =
-    document.getElementById("registerName");
-
-const emailElement =
-    document.getElementById("registerEmail");
-
-const passwordElement =
-    document.getElementById("registerPassword");
+    event.preventDefault();
 
 
-if (!nameElement ||
-    !emailElement ||
-    !passwordElement) {
-
-    console.error(
-        "No se encontraron los campos del registro."
-    );
-
-    return;
-}
+    const name =
+        document.getElementById(
+            "registerName"
+        ).value.trim();
 
 
-const name =
-    nameElement.value.trim();
-
-const email =
-    emailElement.value.trim();
-
-const password =
-    passwordElement.value;
+    const email =
+        document.getElementById(
+            "registerEmail"
+        ).value.trim();
 
 
-// Validar campos
-
-if (!name ||
-    !email ||
-    !password) {
-
-    showNotification(
-        "Campos incompletos",
-        "Completa todos los campos para crear tu cuenta.",
-        "warning"
-    );
-
-    return;
-}
+    const password =
+        document.getElementById(
+            "registerPassword"
+        ).value;
 
 
-const user = {
+    if (
+        !name ||
+        !email ||
+        !password
+    ) {
 
-    name: name,
-
-    email: email,
-
-    password: password
-
-};
-
-
-try {
-
-    const response =
-        await fetch(
-            `${API_URL}/register`,
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(user)
-            }
-        );
-
-
-    // Error del servidor
-
-    if (!response.ok) {
-
-        const error =
-            await response.text();
-
-        showNotification(
-            "No se pudo crear la cuenta",
-            error ||
-            "Inténtalo nuevamente.",
+        showMessage(
+            "registerMessage",
+            "Completa todos los campos.",
             "error"
         );
 
         return;
+
     }
 
 
-    // Usuario creado
-
-    const registeredUser =
-        await response.json();
-
-
-    console.log(
-        "Usuario registrado:",
-        registeredUser
-    );
+    const user = {
+        name: name,
+        email: email,
+        password: password
+    };
 
 
-    showNotification(
-        "¡Cuenta creada!",
-        "Tu cuenta de TuXI fue creada correctamente.",
-        "success"
-    );
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/register`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(user)
+                }
+            );
 
 
-    // Cerrar registro
+        if (!response.ok) {
 
-    closeModal("modalRegister");
-
-
-    // Abrir login después de un pequeño retraso
-
-    setTimeout(() => {
-
-        openModal("modalLogin");
-
-    }, 500);
+            const error =
+                await response.text();
 
 
-} catch (error) {
+            showMessage(
+                "registerMessage",
+                error ||
+                    "No se pudo crear la cuenta.",
+                "error"
+            );
 
-    console.error(
-        "Error al registrar:",
-        error
-    );
+            return;
+
+        }
 
 
-    showNotification(
-        "Servidor no disponible",
-        "No pudimos conectar con TuXI. Comprueba que la API esté ejecutándose.",
-        "error"
-    );
+        const registeredUser =
+            await response.json();
+
+
+        console.log(
+            "Usuario registrado:",
+            registeredUser
+        );
+
+
+        showMessage(
+            "registerMessage",
+            "¡Cuenta creada correctamente! Ahora puedes iniciar sesión.",
+            "success"
+        );
+
+
+        document
+            .getElementById(
+                "registerForm"
+            )
+            .reset();
+
+
+        setTimeout(
+            function () {
+
+                showLogin();
+
+
+                const loginEmail =
+                    document.getElementById(
+                        "loginEmail"
+                    );
+
+
+                if (loginEmail) {
+
+                    loginEmail.value =
+                        email;
+
+                }
+
+            },
+            1200
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al registrar:",
+            error
+        );
+
+
+        showMessage(
+            "registerMessage",
+            "No se pudo conectar con el servidor. Asegúrate de que la API esté ejecutándose.",
+            "error"
+        );
+
+    }
 
 }
 
 
-}
-
-// =====================================================
-// INICIO DE SESIÓN
-// =====================================================
+// ==================================================
+// LOGIN
+// ==================================================
 
 async function loginUser(event) {
 
-
-event.preventDefault();
-
-
-const emailElement =
-    document.getElementById("loginEmail");
-
-const passwordElement =
-    document.getElementById("loginPassword");
+    event.preventDefault();
 
 
-if (!emailElement ||
-    !passwordElement) {
-
-    console.error(
-        "No se encontraron los campos del login."
-    );
-
-    return;
-}
+    const email =
+        document.getElementById(
+            "loginEmail"
+        ).value.trim();
 
 
-const email =
-    emailElement.value.trim();
-
-const password =
-    passwordElement.value;
-
-
-// Validar campos
-
-if (!email ||
-    !password) {
-
-    showNotification(
-        "Faltan datos",
-        "Ingresa tu correo y contraseña.",
-        "warning"
-    );
-
-    return;
-}
+    const password =
+        document.getElementById(
+            "loginPassword"
+        ).value;
 
 
-const loginData = {
+    if (
+        !email ||
+        !password
+    ) {
 
-    email: email,
-
-    password: password
-
-};
-
-
-try {
-
-    const response =
-        await fetch(
-            `${API_URL}/login`,
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(loginData)
-            }
-        );
-
-
-    // Credenciales incorrectas
-
-    if (!response.ok) {
-
-        const error =
-            await response.text();
-
-        showNotification(
-            "No pudimos iniciar sesión",
-            error ||
-            "Revisa tu correo y contraseña.",
+        showMessage(
+            "loginMessage",
+            "Ingresa tu correo y contraseña.",
             "error"
         );
 
         return;
+
     }
 
 
-    // Login correcto
-
-    const user =
-        await response.json();
-
-
-    console.log(
-        "Usuario conectado:",
-        user
-    );
+    const loginData = {
+        email: email,
+        password: password
+    };
 
 
-    // Guardar sesión
+    try {
 
-    localStorage.setItem(
-        "currentUser",
-        JSON.stringify(user)
-    );
+        const response =
+            await fetch(
+                `${API_URL}/login`,
+                {
+                    method: "POST",
 
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-    // Cerrar modal
-
-    closeModal("modalLogin");
-
-
-    // Actualizar nombre del usuario
-
-    updateUserInterface();
-
-
-    // Mostrar notificación
-
-    showNotification(
-        `¡Bienvenido, ${user.name}!`,
-        "Has iniciado sesión correctamente.",
-        "success"
-    );
+                    body:
+                        JSON.stringify(loginData)
+                }
+            );
 
 
-} catch (error) {
+        if (!response.ok) {
 
-    console.error(
-        "Error al iniciar sesión:",
-        error
-    );
+            const error =
+                await response.text();
 
 
-    showNotification(
-        "Servidor no disponible",
-        "No pudimos conectar con TuXI. Comprueba que la API esté ejecutándose.",
-        "error"
-    );
+            showMessage(
+                "loginMessage",
+                error ||
+                    "Correo o contraseña incorrectos.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const user =
+            await response.json();
+
+
+        console.log(
+            "Usuario iniciado:",
+            user
+        );
+
+
+        // Guardar sesión
+
+        localStorage.setItem(
+            "currentUser",
+            JSON.stringify(user)
+        );
+
+
+        showMessage(
+            "loginMessage",
+            `¡Bienvenido, ${user.name || "Usuario"}!`,
+            "success"
+        );
+
+
+        setTimeout(
+            function () {
+
+                window.location.href =
+                    "index.html";
+
+            },
+            700
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al iniciar sesión:",
+            error
+        );
+
+
+        showMessage(
+            "loginMessage",
+            "No se pudo conectar con el servidor. Asegúrate de que la API esté ejecutándose.",
+            "error"
+        );
+
+    }
 
 }
 
 
-}
-
-// =====================================================
-// OBTENER USUARIO ACTUAL
-// =====================================================
+// ==================================================
+// OBTENER USUARIO
+// ==================================================
 
 function getCurrentUser() {
 
+    const user =
+        localStorage.getItem(
+            "currentUser"
+        );
 
-const user =
-    localStorage.getItem("currentUser");
+
+    if (!user) {
+        return null;
+    }
 
 
-if (!user) {
+    try {
 
-    return null;
+        return JSON.parse(user);
+
+    } catch (error) {
+
+        console.error(
+            "Error leyendo usuario:",
+            error
+        );
+
+        localStorage.removeItem(
+            "currentUser"
+        );
+
+        return null;
+
+    }
 
 }
 
 
-try {
+// ==================================================
+// CERRAR SESIÓN
+// ==================================================
 
-    return JSON.parse(user);
-
-} catch (error) {
-
-    console.error(
-        "Error leyendo usuario:",
-        error
-    );
-
+function logoutUser() {
 
     localStorage.removeItem(
         "currentUser"
     );
 
-
-    return null;
-}
-
-
-}
-
-// =====================================================
-// ACTUALIZAR INTERFAZ DEL USUARIO
-// =====================================================
-
-function updateUserInterface() {
-
-
-const userMenuBtn =
-    document.getElementById("userMenuBtn");
-
-
-if (!userMenuBtn) {
-
-    return;
+    window.location.href =
+        "auth.html";
 
 }
 
 
-const user =
-    getCurrentUser();
+// ==================================================
+// MENSAJES
+// ==================================================
+
+function showMessage(
+    elementId,
+    message,
+    type
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
 
 
-// =================================================
-// USUARIO LOGUEADO
-// =================================================
-
-if (user) {
-
-    userMenuBtn.innerHTML =
-        `<i class="fas fa-user-circle"></i> ${user.name}`;
+    if (!element) {
+        return;
+    }
 
 
-    userMenuBtn.onclick =
-        function (event) {
-
-            event.preventDefault();
+    element.textContent =
+        message;
 
 
-            // Abrir nuestro modal personalizado
-
-            openLogoutModal(
-                user.name
-            );
-
-        };
-
-}
-
-
-// =================================================
-// USUARIO NO LOGUEADO
-// =================================================
-
-else {
-
-    userMenuBtn.innerHTML =
-        `<i class="fas fa-user-circle"></i> Iniciar sesión`;
-
-
-    userMenuBtn.onclick =
-        function (event) {
-
-            event.preventDefault();
-
-
-            // Abrir modal de login
-
-            openModal(
-                "modalLogin"
-            );
-
-        };
-}
-
-
-}
-
-// =====================================================
-// MODAL PERSONALIZADO DE CIERRE DE SESIÓN
-// =====================================================
-
-function openLogoutModal(userName) {
-
-
-const modal =
-    document.getElementById("logoutModal");
-
-const message =
-    document.getElementById("logoutMessage");
-
-
-if (!modal) {
-
-    console.error(
-        "No existe logoutModal en index.html"
-    );
-
-    return;
+    element.className =
+        `auth-message ${type}`;
 
 }
 
 
-if (message) {
+function clearMessages() {
 
-    message.innerHTML =
-        `Sesión iniciada como <strong>${userName}</strong>.<br>
-         ¿Quieres cerrar sesión?`;
+    const loginMessage =
+        document.getElementById(
+            "loginMessage"
+        );
 
-}
-
-
-modal.classList.add(
-    "show"
-);
-
-
-}
-
-// =====================================================
-// CERRAR MODAL DE LOGOUT
-// =====================================================
-
-function closeLogoutModal() {
+    const registerMessage =
+        document.getElementById(
+            "registerMessage"
+        );
 
 
-const modal =
-    document.getElementById("logoutModal");
+    if (loginMessage) {
+
+        loginMessage.textContent =
+            "";
+
+        loginMessage.className =
+            "auth-message";
+
+    }
 
 
-if (!modal) {
+    if (registerMessage) {
 
-    return;
+        registerMessage.textContent =
+            "";
 
-}
+        registerMessage.className =
+            "auth-message";
 
-
-modal.classList.remove(
-    "show"
-);
-
+    }
 
 }
 
-// =====================================================
-// CONFIRMAR CIERRE DE SESIÓN
-// =====================================================
 
-function confirmLogout() {
-
-
-closeLogoutModal();
-
-
-setTimeout(() => {
-
-    logoutUser();
-
-}, 250);
-
-
-}
-
-// =====================================================
-// CERRAR SESIÓN
-// =====================================================
-
-function logoutUser() {
-
-
-// Eliminar usuario guardado
-
-localStorage.removeItem(
-    "currentUser"
-);
-
-
-// Actualizar interfaz
-
-updateUserInterface();
-
-
-// Mostrar notificación
-
-showNotification(
-    "Sesión cerrada",
-    "Has cerrado sesión correctamente.",
-    "info"
-);
-
-
-}
-
-// =====================================================
-// INICIAR SISTEMA DE AUTENTICACIÓN
-// =====================================================
+// ==================================================
+// COMPROBAR SESIÓN
+// SOLO EN AUTH.HTML
+// ==================================================
 
 document.addEventListener(
-"DOMContentLoaded",
-function () {
+    "DOMContentLoaded",
+    function () {
+
+        const currentPage =
+            window.location.pathname
+                .split("/")
+                .pop();
 
 
-    updateUserInterface();
+        if (
+            currentPage ===
+                "auth.html" &&
+            getCurrentUser()
+        ) {
 
-}
+            window.location.href =
+                "index.html";
 
+        }
 
+    }
 );

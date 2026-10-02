@@ -784,5 +784,151 @@ body {
     }
 
 }
-=======
->>>>>>> 8272aec45483f17f108c1363394b294c9f0410ad
+
+
+
+/* =========================================
+   MENÚ DEL USUARIO
+========================================= */
+
+.user-menu-container {
+    position: relative;
+}
+
+.user-menu-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.user-arrow {
+    font-size: 11px;
+    margin-left: 3px;
+    transition: transform 0.2s ease;
+}
+
+.user-menu-container.active .user-arrow {
+    transform: rotate(180deg);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+
+    width: 260px;
+
+    background: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+    padding: 8px;
+
+    display: none;
+
+    z-index: 9999;
+}
+
+.user-menu-container.active .user-dropdown {
+    display: block;
+}
+
+/* Cabecera */
+
+.user-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 12px;
+}
+
+.user-dropdown-header > i {
+    font-size: 35px;
+    color: #3483fa;
+}
+
+.user-dropdown-header div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.user-dropdown-header strong {
+    font-size: 15px;
+    color: #333;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-dropdown-header small {
+    color: #888;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* Separador */
+
+.user-dropdown-divider {
+    height: 1px;
+    background: #eeeeee;
+    margin: 6px 0;
+}
+
+/* Opciones */
+
+.user-dropdown-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 11px 12px;
+
+    border: none;
+    background: transparent;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    color: #333;
+
+    text-align: left;
+
+    transition: background 0.15s ease;
+}
+
+.user-dropdown-item:hover {
+    background: #f5f5f5;
+}
+
+.user-dropdown-item i {
+    width: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.logout-item {
+    color: #d93025;
+}
+
+.logout-item i {
+    color: #d93025;
+}
+
+.logout-item:hover {
+    background: #fff1f0;
+}

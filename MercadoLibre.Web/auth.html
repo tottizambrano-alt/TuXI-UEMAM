@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>TuXI - Iniciar sesión</title>
+
+    <link rel="stylesheet" href="assets/css/auth.css" />
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+</head>
+
+<body>
+
+    <main class="auth-page">
+
+        <section class="auth-container">
+
+            <!-- LOGO -->
+
+            <div class="auth-logo">
+
+                <span class="logo-text">
+                    Tu<b>XI</b>
+                </span>
+
+                <p>
+                    TuXi sabes donde comprar.
+                </p>
+
+            </div>
+
+
+            <!-- TARJETA -->
+
+            <div class="auth-card">
+
+                <!-- LOGIN -->
+
+                <div id="loginSection" class="auth-section">
+
+                    <div class="auth-header">
+
+                        <h1>
+                            Bienvenido a TuXI
+                        </h1>
+
+                        <p>
+                            Inicia sesión para continuar
+                        </p>
+
+                    </div>
+
+
+                    <form
+                        id="loginForm"
+                        onsubmit="loginUser(event)"
+                    >
+
+                        <div class="form-group">
+
+                            <label for="loginEmail">
+                                Correo electrónico
+                            </label>
+
+                            <div class="input-container">
+
+                                <i class="fas fa-envelope"></i>
+
+                                <input
+                                    type="email"
+                                    id="loginEmail"
+                                    placeholder="ejemplo@correo.com"
+                                    required
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="loginPassword">
+                                Contraseña
+                            </label>
+
+                            <div class="input-container">
+
+                                <i class="fas fa-lock"></i>
+
+                                <input
+                                    type="password"
+                                    id="loginPassword"
+                                    placeholder="Tu contraseña"
+                                    required
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="auth-button"
+                        >
+
+                            <i class="fas fa-right-to-bracket"></i>
+
+                            Iniciar sesión
+
+                        </button>
+
+                    </form>
+
+
+                    <div
+                        id="loginMessage"
+                        class="auth-message"
+                    ></div>
+
+
+                    <div class="auth-switch">
+
+                        <span>
+                            ¿No tienes una cuenta?
+                        </span>
+
+                        <button
+                            type="button"
+                            onclick="showRegister()"
+                        >
+                            Crear cuenta
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REGISTRO -->
+
+                <div
+                    id="registerSection"
+                    class="auth-section hidden"
+                >
+
+                    <div class="auth-header">
+
+                        <h1>
+                            Crear cuenta
+                        </h1>
+
+                        <p>
+                            Únete a la comunidad de TuXI
+                        </p>
+
+                    </div>
+
+
+                    <form
+                        id="registerForm"
+                        onsubmit="registerUser(event)"
+                    >
+
+                        <div class="form-group">
+
+                            <label for="registerName">
+                                Nombre completo
+                            </label>
+
+                            <div class="input-container">
+
+                                <i class="fas fa-user"></i>
+
+                                <input
+                                    type="text"
+                                    id="registerName"
+                                    placeholder="Tu nombre"
+                                    required
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="registerEmail">
+                                Correo electrónico
+                            </label>
+
+                            <div class="input-container">
+
+                                <i class="fas fa-envelope"></i>
+
+                                <input
+                                    type="email"
+                                    id="registerEmail"
+                                    placeholder="ejemplo@correo.com"
+                                    required
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="registerPassword">
+                                Contraseña
+                            </label>
+
+                            <div class="input-container">
+
+                                <i class="fas fa-lock"></i>
+
+                                <input
+                                    type="password"
+                                    id="registerPassword"
+                                    placeholder="Crea una contraseña"
+                                    required
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="auth-button"
+                        >
+
+                            <i class="fas fa-user-plus"></i>
+
+                            Crear cuenta
+
+                        </button>
+
+                    </form>
+
+
+                    <div
+                        id="registerMessage"
+                        class="auth-message"
+                    ></div>
+
+
+                    <div class="auth-switch">
+
+                        <span>
+                            ¿Ya tienes una cuenta?
+                        </span>
+
+                        <button
+                            type="button"
+                            onclick="showLogin()"
+                        >
+                            Iniciar sesión
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <p class="auth-footer">
+                © 2026 TuXI · Crece tu negocio
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <script src="js/auth.js"></script>
+
+</body>
+
+</html>

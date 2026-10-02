@@ -35,3 +35,4 @@ C:\Users\LEDY PINARGOTE\Documents\sor-Benthas-main\MercadoLibre.Api\obj\Debug\ne
 C:\Users\LEDY PINARGOTE\Documents\sor-Benthas-main\MercadoLibre.Api\obj\Debug\net10.0\MercadoLibre.Api.pdb
 C:\Users\LEDY PINARGOTE\Documents\sor-Benthas-main\MercadoLibre.Api\obj\Debug\net10.0\MercadoLibre.Api.genruntimeconfig.cache
 C:\Users\LEDY PINARGOTE\Documents\sor-Benthas-main\MercadoLibre.Api\obj\Debug\net10.0\ref\MercadoLibre.Api.dll
+C:\Users\LEDY PINARGOTE\Documents\sor-Benthas-main\MercadoLibre.Api\obj\Debug\net10.0\MercadoLibre.Api.sourcelink.json
