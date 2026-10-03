@@ -16,20 +16,52 @@ namespace MercadoLibre.Api.Controllers
             _context = context;
         }
 
-        [HttpGet("{productId}")]
-        public async Task<ActionResult<IEnumerable<Message>>> GetMessages(int productId)
+        // GET: api/Messages/conversation/1
+        [HttpGet("conversation/{conversationId:int}")]
+        public async Task<ActionResult<IEnumerable<Message>>> GetMessages(
+            int conversationId)
         {
-            return await _context.Messages
-                .Where(m => m.ProductId == productId)
+            var conversationExists = await _context.Conversations
+                .AnyAsync(c => c.Id == conversationId);
+
+            if (!conversationExists)
+            {
+                return NotFound("La conversación no existe.");
+            }
+
+            var messages = await _context.Messages
+                .Where(m => m.ConversationId == conversationId)
                 .OrderBy(m => m.SentAt)
                 .ToListAsync();
+
+            return Ok(messages);
         }
 
+        // POST: api/Messages
         [HttpPost]
-        public async Task<ActionResult<Message>> SendMessage(Message message)
+        public async Task<ActionResult<Message>> SendMessage(
+            [FromBody] Message message)
         {
+            var conversationExists = await _context.Conversations
+                .AnyAsync(c => c.Id == message.ConversationId);
+
+            if (!conversationExists)
+            {
+                return BadRequest("La conversación no existe.");
+            }
+
+            if (string.IsNullOrWhiteSpace(message.Content))
+            {
+                return BadRequest("El mensaje no puede estar vacío.");
+            }
+
+            message.Content = message.Content.Trim();
+            message.SentAt = DateTime.UtcNow;
+
             _context.Messages.Add(message);
+
             await _context.SaveChangesAsync();
+
             return Ok(message);
         }
     }

@@ -301,13 +301,17 @@ function openUserSection(section) {
         // CHATS
         // ------------------------------------------
 
-        case "chat":
+       case "chat":
 
-            openUserPanel(
-                "chatPanel"
-            );
+    if (typeof openPrivateChats === "function") {
+        openPrivateChats();
+    } else {
+        console.error(
+            "openPrivateChats() no existe. Revisa chat.js."
+        );
+    }
 
-            break;
+    break;
 
 
         // ------------------------------------------
@@ -1031,16 +1035,6 @@ function openProductDetail(id) {
     `;
 
 
-    if (
-        typeof loadChat ===
-        "function"
-    ) {
-
-        loadChat(
-            product.id
-        );
-
-    }
 
 
     openModal(

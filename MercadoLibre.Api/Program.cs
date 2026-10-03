@@ -14,12 +14,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // ========================================
-// BASE DE DATOS EN MEMORIA
+// BASE DE DATOS SQLITE
 // ========================================
+
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Data Source=tuxi.db";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseInMemoryDatabase("MercadoLibreDb");
+    options.UseSqlite(connectionString);
 });
 
 // ========================================
@@ -42,6 +46,17 @@ builder.Services.AddCors(options =>
 // ========================================
 
 var app = builder.Build();
+
+// ========================================
+// CREAR BASE DE DATOS
+// ========================================
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    db.Database.EnsureCreated();
+}
 
 // ========================================
 // SWAGGER

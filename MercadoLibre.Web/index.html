@@ -892,6 +892,122 @@
 		</div>
 
 
+		<!-- =========================================
+     MODAL: CHATS PRIVADOS DE TUXI
+========================================== -->
+
+		<div id="modalChat" class="modal tuxi-chat-modal">
+			<div class="modal-content tuxi-chat-window">
+
+				<div class="tuxi-chat-header">
+					<div>
+						<h2>
+							<i class="fas fa-comments"></i> Mis chats
+						</h2>
+						<p>Conversa con otros usuarios de TuXI</p>
+					</div>
+
+					<button
+						type="button"
+						class="close-modal"
+						onclick="closePrivateChats()"
+						aria-label="Cerrar chats"
+            >×</button>
+				</div>
+
+				<div class="tuxi-chat-layout">
+
+					<!-- PANEL IZQUIERDO -->
+					<aside class="tuxi-chat-sidebar">
+
+						<div class="tuxi-chat-search">
+							<label for="chatUserSearch">Buscar usuarios</label>
+
+							<input
+								type="search"
+								id="chatUserSearch"
+								placeholder="Nombre o correo..."
+								autocomplete="off"
+                    />
+
+							<div
+								id="chatSearchResults"
+								class="chat-search-results"
+                    ></div>
+						</div>
+
+						<div class="tuxi-conversations-heading">
+							<h3>Conversaciones</h3>
+						</div>
+
+						<div
+							id="chatConversationList"
+							class="chat-conversation-list"
+                ></div>
+
+					</aside>
+
+					<!-- PANEL DERECHO -->
+					<section class="tuxi-chat-main">
+
+						<div class="tuxi-private-chat-header">
+							<div class="chat-avatar">
+								<i class="fas fa-user"></i>
+							</div>
+
+							<div>
+								<h3 id="privateChatTitle">Tus mensajes</h3>
+								<p id="privateChatSubtitle">
+									Selecciona un chat para comenzar.
+								</p>
+							</div>
+						</div>
+
+						<div
+							id="privateChatPlaceholder"
+							class="private-chat-placeholder"
+                >
+							<i class="fas fa-comment-dots"></i>
+							<h3>¡Conecta con otros usuarios!</h3>
+							<p>
+								Busca una persona en el panel izquierdo
+								para iniciar una conversación.
+							</p>
+						</div>
+
+						<div
+							id="privateChatMessages"
+							class="private-chat-messages"
+							aria-live="polite"
+                ></div>
+
+						<form
+							id="privateChatForm"
+							class="private-chat-form"
+							hidden=""
+                >
+							<input
+								type="text"
+								id="privateMessageInput"
+								placeholder="Escribe un mensaje..."
+								maxlength="2000"
+								autocomplete="off"
+								required=""
+                    />
+
+							<button
+								type="submit"
+								id="privateSendButton"
+								aria-label="Enviar mensaje"
+                    >
+								<i class="fas fa-paper-plane"></i>
+							</button>
+						</form>
+
+					</section>
+				</div>
+			</div>
+		</div>
 
 		<!-- =========================================
          JAVASCRIPT

@@ -1,15 +1,24 @@
 {
   "version": 2,
-  "dgSpecHash": "gUMoPVfT3UI=",
+  "dgSpecHash": "AffU84I5PHY=",
   "success": true,
   "projectFilePath": "C:\\Users\\LEDY PINARGOTE\\Documents\\sor-Benthas-main\\MercadoLibre.Api\\MercadoLibre.Api.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.data.sqlite.core\\10.0.0\\microsoft.data.sqlite.core.10.0.0.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.0\\microsoft.entityframeworkcore.10.0.0.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.0\\microsoft.entityframeworkcore.abstractions.10.0.0.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.0\\microsoft.entityframeworkcore.analyzers.10.0.0.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.entityframeworkcore.inmemory\\10.0.0\\microsoft.entityframeworkcore.inmemory.10.0.0.nupkg.sha512",
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.0\\microsoft.entityframeworkcore.relational.10.0.0.nupkg.sha512",
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\10.0.0\\microsoft.entityframeworkcore.sqlite.10.0.0.nupkg.sha512",
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\10.0.0\\microsoft.entityframeworkcore.sqlite.core.10.0.0.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.extensions.apidescription.server\\10.0.0\\microsoft.extensions.apidescription.server.10.0.0.nupkg.sha512",
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.extensions.dependencymodel\\10.0.0\\microsoft.extensions.dependencymodel.10.0.0.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\microsoft.openapi\\2.3.0\\microsoft.openapi.2.3.0.nupkg.sha512",
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.11\\sqlitepclraw.bundle_e_sqlite3.2.1.11.nupkg.sha512",
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\sqlitepclraw.core\\2.1.11\\sqlitepclraw.core.2.1.11.nupkg.sha512",
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.11\\sqlitepclraw.lib.e_sqlite3.2.1.11.nupkg.sha512",
+    "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.11\\sqlitepclraw.provider.e_sqlite3.2.1.11.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\swashbuckle.aspnetcore\\10.0.1\\swashbuckle.aspnetcore.10.0.1.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\10.0.1\\swashbuckle.aspnetcore.swagger.10.0.1.nupkg.sha512",
     "C:\\Users\\LEDY PINARGOTE\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\10.0.1\\swashbuckle.aspnetcore.swaggergen.10.0.1.nupkg.sha512",
@@ -24,6 +33,18 @@
       "warningLevel": 1,
       "filePath": "C:\\Users\\LEDY PINARGOTE\\Documents\\sor-Benthas-main\\MercadoLibre.Api\\MercadoLibre.Api.csproj",
       "libraryId": "Microsoft.OpenApi",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "El paquete \"SQLitePCLRaw.lib.e_sqlite3\" 2.1.11 tiene una vulnerabilidad de gravedad alta conocida, https://github.com/advisories/GHSA-2m69-gcr7-jv3q",
+      "projectPath": "C:\\Users\\LEDY PINARGOTE\\Documents\\sor-Benthas-main\\MercadoLibre.Api\\MercadoLibre.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\LEDY PINARGOTE\\Documents\\sor-Benthas-main\\MercadoLibre.Api\\MercadoLibre.Api.csproj",
+      "libraryId": "SQLitePCLRaw.lib.e_sqlite3",
       "targetGraphs": [
         "net10.0"
       ]

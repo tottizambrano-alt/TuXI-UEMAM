@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MercadoLibre.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a48294e7e5ae248aaaa7e40bd8b7826e43a0265b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e7045f83359775c3f047ff2ff6c6adfe4aa01626")]
 [assembly: System.Reflection.AssemblyProductAttribute("MercadoLibre.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MercadoLibre.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
