@@ -1,403 +1,658 @@
-// ==================================================
-// MOSTRAR LOGIN
-// ==================================================
+const API_BASE_URL = "http://localhost:5000/api";
 
-function showLogin() {
-    const loginSection = document.getElementById("loginSection");
-    const registerSection = document.getElementById("registerSection");
+const GOOGLE_CLIENT_ID =
+    "232132447961-be5jqhlk45olm4iavq2k4qq6fi2ho2f7.apps.googleusercontent.com";
 
-    if (!loginSection || !registerSection) {
-        return;
-    }
-
-    registerSection.classList.add("hidden");
-    loginSection.classList.remove("hidden");
-
-    clearMessages();
-}
+const INSTITUTIONAL_DOMAIN = "@uemam.edu.ec";
 
 
-// ==================================================
-// MOSTRAR REGISTRO
-// ==================================================
+// ======================================================
+// PETICIÓN GENERAL A LA API
+// ======================================================
 
-function showRegister() {
-    const loginSection = document.getElementById("loginSection");
-    const registerSection = document.getElementById("registerSection");
+async function apiAuthRequest(
+    endpoint,
+    options = {}
+) {
 
-    if (!loginSection || !registerSection) {
-        return;
-    }
+    const response = await fetch(
+        `${API_BASE_URL}${endpoint}`,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                ...(options.headers || {})
+            },
+            ...options
+        }
+    );
 
-    loginSection.classList.add("hidden");
-    registerSection.classList.remove("hidden");
-
-    clearMessages();
-}
-
-
-// ==================================================
-// OBTENER USUARIOS
-// ==================================================
-
-function getUsers() {
-    const storedUsers = localStorage.getItem("tuxi_users");
-
-    if (!storedUsers) {
-        return [];
-    }
+    let data = null;
 
     try {
-        const users = JSON.parse(storedUsers);
 
-        if (!Array.isArray(users)) {
-            return [];
+        data = await response.json();
+
+    } catch {
+
+        data = null;
+
+    }
+
+
+    if (!response.ok) {
+
+        let message = "Ocurrió un error.";
+
+        if (typeof data === "string") {
+
+            message = data;
+
+        } else if (data?.message) {
+
+            message = data.message;
+
+        } else if (data?.title) {
+
+            message = data.title;
+
         }
 
-        return users;
-    } catch (error) {
-        console.error("Error leyendo usuarios:", error);
-        return [];
+        throw new Error(message);
+
     }
+
+    return data;
+
 }
 
 
-// ==================================================
-// GUARDAR USUARIOS
-// ==================================================
+// ======================================================
+// MOSTRAR LOGIN
+// ======================================================
 
-function saveUsers(users) {
-    localStorage.setItem(
-        "tuxi_users",
-        JSON.stringify(users)
-    );
+function showLogin() {
+
+    const loginSection =
+        document.getElementById("loginSection");
+
+    const registerSection =
+        document.getElementById("registerSection");
+
+
+    loginSection.classList.remove("hidden");
+
+    registerSection.classList.add("hidden");
+
+
+    clearAuthMessages();
+
 }
 
 
-// ==================================================
-// REGISTRO
-// ==================================================
+// ======================================================
+// MOSTRAR REGISTRO
+// ======================================================
 
-function registerUser(event) {
+function showRegister() {
+
+    const loginSection =
+        document.getElementById("loginSection");
+
+    const registerSection =
+        document.getElementById("registerSection");
+
+
+    loginSection.classList.add("hidden");
+
+    registerSection.classList.remove("hidden");
+
+
+    clearAuthMessages();
+
+}
+
+
+// ======================================================
+// LIMPIAR MENSAJES
+// ======================================================
+
+function clearAuthMessages() {
+
+    const loginMessage =
+        document.getElementById("loginMessage");
+
+    const registerMessage =
+        document.getElementById("registerMessage");
+
+
+    if (loginMessage) {
+
+        loginMessage.textContent = "";
+
+        loginMessage.className =
+            "auth-message";
+
+    }
+
+
+    if (registerMessage) {
+
+        registerMessage.textContent = "";
+
+        registerMessage.className =
+            "auth-message";
+
+    }
+
+}
+
+
+// ======================================================
+// MOSTRAR MENSAJE
+// ======================================================
+
+function showMessage(
+    elementId,
+    message,
+    type = "error"
+) {
+
+    const element =
+        document.getElementById(elementId);
+
+
+    if (!element) {
+
+        return;
+
+    }
+
+
+    element.textContent = message;
+
+    element.className =
+        `auth-message ${type}`;
+
+}
+
+
+// ======================================================
+// VALIDAR CORREO INSTITUCIONAL
+// ======================================================
+
+function isInstitutionalEmail(email) {
+
+    return email
+        .trim()
+        .toLowerCase()
+        .endsWith(INSTITUTIONAL_DOMAIN);
+
+}
+
+
+// ======================================================
+// REGISTRO NORMAL
+// ======================================================
+
+async function registerUser(event) {
+
     event.preventDefault();
 
-    const nameInput =
-        document.getElementById("registerName");
-
-    const emailInput =
-        document.getElementById("registerEmail");
-
-    const passwordInput =
-        document.getElementById("registerPassword");
-
-    if (
-        !nameInput ||
-        !emailInput ||
-        !passwordInput
-    ) {
-        return;
-    }
 
     const name =
-        nameInput.value.trim();
+        document
+            .getElementById("registerName")
+            .value
+            .trim();
+
 
     const email =
-        emailInput.value.trim().toLowerCase();
+        document
+            .getElementById("registerEmail")
+            .value
+            .trim()
+            .toLowerCase();
+
 
     const password =
-        passwordInput.value;
+        document
+            .getElementById("registerPassword")
+            .value;
 
-    if (!name || !email || !password) {
+
+    const messageElement =
+        document.getElementById(
+            "registerMessage"
+        );
+
+
+    if (!name) {
+
         showMessage(
             "registerMessage",
-            "Completa todos los campos.",
-            "error"
+            "El nombre es obligatorio."
         );
 
         return;
+
     }
 
-    if (password.length < 4) {
+
+    if (!isInstitutionalEmail(email)) {
+
         showMessage(
             "registerMessage",
-            "La contraseña debe tener al menos 4 caracteres.",
-            "error"
+            "Solo puedes registrarte con un correo @uemam.edu.ec."
         );
 
         return;
+
     }
 
-    const users = getUsers();
 
-    const existingUser =
-        users.find(
-            function (user) {
-                return user.email === email;
-            }
-        );
+    if (!password) {
 
-    if (existingUser) {
         showMessage(
             "registerMessage",
-            "Ya existe una cuenta con ese correo.",
-            "error"
+            "La contraseña es obligatoria."
         );
 
         return;
+
     }
 
-    const newUser = {
-        id: Date.now(),
-        name: name,
-        email: email,
-        password: password,
-        createdAt: new Date().toISOString()
-    };
 
-    users.push(newUser);
+    try {
 
-    saveUsers(users);
+        messageElement.textContent =
+            "Creando cuenta...";
 
-    console.log(
-        "Usuario registrado:",
-        newUser
-    );
+        messageElement.className =
+            "auth-message";
 
-    showMessage(
-        "registerMessage",
-        "¡Cuenta creada correctamente! Ahora puedes iniciar sesión.",
-        "success"
-    );
 
-    document
-        .getElementById("registerForm")
-        .reset();
+        const user =
+            await apiAuthRequest(
+                "/Auth/register",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password
+                    })
+                }
+            );
 
-    setTimeout(
-        function () {
-            showLogin();
 
-            const loginEmail =
-                document.getElementById(
-                    "loginEmail"
-                );
+        saveCurrentUser(user);
 
-            if (loginEmail) {
-                loginEmail.value = email;
-            }
-        },
-        1200
-    );
+
+        showMessage(
+            "registerMessage",
+            "Cuenta creada correctamente. Entrando...",
+            "success"
+        );
+
+
+        setTimeout(() => {
+
+            window.location.href =
+                "index.html";
+
+        }, 700);
+
+
+    } catch (error) {
+
+        showMessage(
+            "registerMessage",
+            error.message
+        );
+
+    }
+
 }
 
 
-// ==================================================
-// LOGIN
-// ==================================================
+// ======================================================
+// LOGIN NORMAL
+// ======================================================
 
-function loginUser(event) {
+async function loginUser(event) {
+
     event.preventDefault();
 
-    const emailInput =
-        document.getElementById("loginEmail");
-
-    const passwordInput =
-        document.getElementById("loginPassword");
-
-    if (
-        !emailInput ||
-        !passwordInput
-    ) {
-        return;
-    }
 
     const email =
-        emailInput.value.trim().toLowerCase();
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim()
+            .toLowerCase();
+
 
     const password =
-        passwordInput.value;
+        document
+            .getElementById("loginPassword")
+            .value;
 
-    if (!email || !password) {
+
+    if (!isInstitutionalEmail(email)) {
+
         showMessage(
             "loginMessage",
-            "Ingresa tu correo y contraseña.",
-            "error"
+            "Solo puedes iniciar sesión con un correo @uemam.edu.ec."
         );
 
         return;
+
     }
 
-    const users = getUsers();
 
-    const user =
-        users.find(
-            function (account) {
-                return (
-                    account.email === email &&
-                    account.password === password
-                );
-            }
+    if (!password) {
+
+        showMessage(
+            "loginMessage",
+            "La contraseña es obligatoria."
         );
+
+        return;
+
+    }
+
+
+    try {
+
+        showMessage(
+            "loginMessage",
+            "Iniciando sesión...",
+            "info"
+        );
+
+
+        const user =
+            await apiAuthRequest(
+                "/Auth/login",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+                }
+            );
+
+
+        saveCurrentUser(user);
+
+
+        showMessage(
+            "loginMessage",
+            "Inicio de sesión correcto. Entrando...",
+            "success"
+        );
+
+
+        setTimeout(() => {
+
+            window.location.href =
+                "index.html";
+
+        }, 500);
+
+
+    } catch (error) {
+
+        showMessage(
+            "loginMessage",
+            error.message
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// LOGIN CON GOOGLE
+// ======================================================
+
+async function handleGoogleCredential(response) {
+
+    const loginMessage =
+        document.getElementById(
+            "loginMessage"
+        );
+
+
+    if (!response || !response.credential) {
+
+        showMessage(
+            "loginMessage",
+            "Google no pudo completar el inicio de sesión."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        showMessage(
+            "loginMessage",
+            "Verificando tu cuenta de Google...",
+            "info"
+        );
+
+
+        const user =
+            await apiAuthRequest(
+                "/Auth/google",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        credential:
+                            response.credential
+                    })
+                }
+            );
+
+
+        saveCurrentUser(user);
+
+
+        showMessage(
+            "loginMessage",
+            "Inicio de sesión con Google correcto. Entrando...",
+            "success"
+        );
+
+
+        setTimeout(() => {
+
+            window.location.href =
+                "index.html";
+
+        }, 500);
+
+
+    } catch (error) {
+
+        console.error(
+            "Error en Google Login:",
+            error
+        );
+
+
+        showMessage(
+            "loginMessage",
+            error.message ||
+            "No se pudo iniciar sesión con Google."
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// GUARDAR USUARIO ACTUAL
+// ======================================================
+
+function saveCurrentUser(user) {
 
     if (!user) {
-        showMessage(
-            "loginMessage",
-            "Correo o contraseña incorrectos.",
-            "error"
-        );
 
         return;
+
     }
 
-    // Guardar solamente la sesión actual.
-    // La contraseña no se guarda en currentUser.
-    const currentUser = {
-        id: user.id,
-        name: user.name,
-        email: user.email
-    };
 
     localStorage.setItem(
         "currentUser",
-        JSON.stringify(currentUser)
+        JSON.stringify(user)
     );
 
-    console.log(
-        "Usuario iniciado:",
-        currentUser
-    );
-
-    showMessage(
-        "loginMessage",
-        `¡Bienvenido, ${currentUser.name}!`,
-        "success"
-    );
-
-    setTimeout(
-        function () {
-            window.location.href =
-                "index.html";
-        },
-        700
-    );
 }
 
 
-// ==================================================
+// ======================================================
 // OBTENER USUARIO ACTUAL
-// ==================================================
+// ======================================================
 
 function getCurrentUser() {
-    const user =
+
+    const savedUser =
         localStorage.getItem(
             "currentUser"
         );
 
-    if (!user) {
+
+    if (!savedUser) {
+
         return null;
+
     }
 
+
     try {
-        return JSON.parse(user);
-    } catch (error) {
-        console.error(
-            "Error leyendo usuario:",
-            error
-        );
+
+        const user =
+            JSON.parse(savedUser);
+
+
+        if (
+            !user ||
+            !user.id ||
+            !user.email
+        ) {
+
+            localStorage.removeItem(
+                "currentUser"
+            );
+
+            return null;
+
+        }
+
+
+        if (
+            !isInstitutionalEmail(
+                user.email
+            )
+        ) {
+
+            localStorage.removeItem(
+                "currentUser"
+            );
+
+            return null;
+
+        }
+
+
+        return user;
+
+    } catch {
 
         localStorage.removeItem(
             "currentUser"
         );
 
         return null;
+
     }
+
 }
 
 
-// ==================================================
+// ======================================================
 // CERRAR SESIÓN
-// ==================================================
+// ======================================================
 
 function logoutUser() {
+
     localStorage.removeItem(
         "currentUser"
     );
 
+
     window.location.href =
         "auth.html";
+
 }
 
 
-// ==================================================
-// MENSAJES
-// ==================================================
+// ======================================================
+// PROTEGER PÁGINAS
+// ======================================================
 
-function showMessage(
-    elementId,
-    message,
-    type
-) {
-    const element =
-        document.getElementById(
-            elementId
-        );
+function requireAuth() {
 
-    if (!element) {
-        return;
+    const user =
+        getCurrentUser();
+
+
+    if (!user) {
+
+        window.location.href =
+            "auth.html";
+
+        return null;
+
     }
 
-    element.textContent =
-        message;
 
-    element.className =
-        `auth-message ${type}`;
+    return user;
+
 }
 
 
-function clearMessages() {
-    const loginMessage =
-        document.getElementById(
-            "loginMessage"
-        );
-
-    const registerMessage =
-        document.getElementById(
-            "registerMessage"
-        );
-
-    if (loginMessage) {
-        loginMessage.textContent = "";
-        loginMessage.className =
-            "auth-message";
-    }
-
-    if (registerMessage) {
-        registerMessage.textContent = "";
-        registerMessage.className =
-            "auth-message";
-    }
-}
-
-
-// ==================================================
-// COMPROBAR SESIÓN
-// SOLO EN AUTH.HTML
-// ==================================================
+// ======================================================
+// EJECUTAR AL CARGAR AUTH.HTML
+// ======================================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
-        const currentPage =
-            window.location.pathname
-                .split("/")
-                .pop();
+    () => {
+
+        const currentUser =
+            getCurrentUser();
+
 
         if (
-            currentPage === "auth.html" &&
-            getCurrentUser()
+            currentUser &&
+            window.location.pathname
+                .toLowerCase()
+                .endsWith("auth.html")
         ) {
+
             window.location.href =
                 "index.html";
+
         }
+
     }
 );

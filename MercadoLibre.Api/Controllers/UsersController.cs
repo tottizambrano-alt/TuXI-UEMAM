@@ -15,13 +15,24 @@ namespace MercadoLibre.Api.Controllers
             _context = context;
         }
 
+
+        // ==================================================
+        // BUSCAR USUARIOS
         // GET: api/Users
         // GET: api/Users?search=miguel
+        // ==================================================
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> SearchUsers(
             [FromQuery] string? search)
         {
-            var query = _context.Users.AsQueryable();
+            var query = _context.Users
+                .Where(u =>
+                    u.Email
+                        .ToLower()
+                        .EndsWith("@uemam.edu.ec"))
+                .AsQueryable();
+
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -31,6 +42,7 @@ namespace MercadoLibre.Api.Controllers
                     u.Name.Contains(search) ||
                     u.Email.Contains(search));
             }
+
 
             var users = await query
                 .OrderBy(u => u.Name)
@@ -43,15 +55,26 @@ namespace MercadoLibre.Api.Controllers
                 })
                 .ToListAsync();
 
+
             return Ok(users);
         }
 
+
+        // ==================================================
+        // OBTENER USUARIO
         // GET: api/Users/5
+        // ==================================================
+
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<object>> GetUser(int id)
+        public async Task<ActionResult<object>> GetUser(
+            int id)
         {
             var user = await _context.Users
-                .Where(u => u.Id == id)
+                .Where(u =>
+                    u.Id == id &&
+                    u.Email
+                        .ToLower()
+                        .EndsWith("@uemam.edu.ec"))
                 .Select(u => new
                 {
                     u.Id,
@@ -61,10 +84,14 @@ namespace MercadoLibre.Api.Controllers
                 })
                 .FirstOrDefaultAsync();
 
+
             if (user == null)
             {
-                return NotFound("Usuario no encontrado.");
+                return NotFound(
+                    "Usuario institucional no encontrado."
+                );
             }
+
 
             return Ok(user);
         }

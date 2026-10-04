@@ -5,11 +5,17 @@
 
     <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
 
     <title>TuXI - Iniciar sesión</title>
 
-    <link rel="stylesheet" href="assets/css/auth.css" />
+    <link
+        rel="stylesheet"
+        href="assets/css/auth.css"
+    />
 
     <link
         rel="stylesheet"
@@ -43,9 +49,13 @@
 
             <div class="auth-card">
 
+
                 <!-- LOGIN -->
 
-                <div id="loginSection" class="auth-section">
+                <div
+                    id="loginSection"
+                    class="auth-section"
+                >
 
                     <div class="auth-header">
 
@@ -78,7 +88,7 @@
                                 <input
                                     type="email"
                                     id="loginEmail"
-                                    placeholder="ejemplo@correo.com"
+                                    placeholder="ejemplo@uemam.edu.ec"
                                     required
                                 />
 
@@ -123,6 +133,40 @@
                     </form>
 
 
+                    <!-- GOOGLE LOGIN -->
+
+                    <div class="google-login">
+
+                        <div class="auth-divider">
+
+                            <span>
+                                o
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            id="g_id_onload"
+                            data-client_id="232132447961-be5jqhlk45olm4iavq2k4qq6fi2ho2f7.apps.googleusercontent.com"
+                            data-callback="handleGoogleCredential"
+                            data-auto_prompt="false"
+                        ></div>
+
+
+                        <div
+                            class="g_id_signin"
+                            data-type="standard"
+                            data-size="large"
+                            data-theme="outline"
+                            data-text="signin_with"
+                            data-shape="rectangular"
+                            data-logo_alignment="left"
+                        ></div>
+
+                    </div>
+
+
                     <div
                         id="loginMessage"
                         class="auth-message"
@@ -139,7 +183,9 @@
                             type="button"
                             onclick="showRegister()"
                         >
+
                             Crear cuenta
+
                         </button>
 
                     </div>
@@ -207,7 +253,7 @@
                                 <input
                                     type="email"
                                     id="registerEmail"
-                                    placeholder="ejemplo@correo.com"
+                                    placeholder="ejemplo@uemam.edu.ec"
                                     required
                                 />
 
@@ -268,7 +314,9 @@
                             type="button"
                             onclick="showLogin()"
                         >
+
                             Iniciar sesión
+
                         </button>
 
                     </div>
@@ -278,6 +326,8 @@
             </div>
 
 
+            <!-- FOOTER -->
+
             <p class="auth-footer">
                 © 2026 TuXI · Crece tu negocio
             </p>
@@ -286,6 +336,17 @@
 
     </main>
 
+
+    <!-- GOOGLE IDENTITY SERVICES -->
+
+    <script
+        src="https://accounts.google.com/gsi/client"
+        async
+        defer
+    ></script>
+
+
+    <!-- TU JAVASCRIPT -->
 
     <script src="js/auth.js"></script>
 

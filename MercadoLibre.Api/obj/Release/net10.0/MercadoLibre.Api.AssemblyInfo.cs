@@ -13,7 +13,7 @@ using System.Reflection;
 
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("3dec56aa-9c4a-4651-995d-b3cee43cac9c")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("MercadoLibre.Api")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+067e478ddc2f7b511cd3bd1264d776fafa2cdb67")]
 [assembly: System.Reflection.AssemblyProductAttribute("MercadoLibre.Api")]

@@ -1,30 +1,28 @@
-
 /* =========================================
    TUXI - CHAT PRIVADO ENTRE USUARIOS
-   Almacenamiento mediante localStorage
+   Datos almacenados mediante API + SQLite
 ========================================= */
 
-const CHAT_USERS_KEY = "tuxi_users";
-const CHAT_CONVERSATIONS_KEY = "tuxi_conversations";
-const CHAT_MESSAGES_KEY = "tuxi_messages";
+const API_BASE_URL = "http://localhost:5000/api";
 
 let activeConversationId = null;
 let chatSearchTimeout = null;
 
+let chatUsers = [];
+let chatConversations = [];
+let chatMessages = {};
+
 /* ---------- UTILIDADES ---------- */
 
-function readChatStorage(key) {
-    try {
-        const data = JSON.parse(localStorage.getItem(key) || "[]");
-        return Array.isArray(data) ? data : [];
-    } catch {
-        return [];
-    }
+function sameId(a, b) {
+    return String(a) === String(b);
 }
 
 function getChatCurrentUser() {
     try {
-        const user = JSON.parse(localStorage.getItem("currentUser") || "null");
+        const user = JSON.parse(
+            localStorage.getItem("currentUser") || "null"
+        );
 
         if (!user || user.id == null) {
             return null;
@@ -36,59 +34,34 @@ function getChatCurrentUser() {
     }
 }
 
-function getChatUsers() {
-    return readChatStorage(CHAT_USERS_KEY);
-}
-
-function getChatConversations() {
-    return readChatStorage(CHAT_CONVERSATIONS_KEY);
-}
-
-function getChatMessages() {
-    return readChatStorage(CHAT_MESSAGES_KEY);
-}
-
-function saveChatConversations(conversations) {
-    localStorage.setItem(
-        CHAT_CONVERSATIONS_KEY,
-        JSON.stringify(conversations)
-    );
-}
-
-function saveChatMessages(messages) {
-    localStorage.setItem(CHAT_MESSAGES_KEY, JSON.stringify(messages));
-}
-
-function sameId(a, b) {
-    return String(a) === String(b);
-}
-
 function getChatUserName(user) {
-    return user?.name || user?.fullName || user?.nombre ||
-        user?.username || user?.email || "Usuario";
+    return user?.name ||
+        user?.fullName ||
+        user?.nombre ||
+        user?.username ||
+        user?.email ||
+        "Usuario";
+}
+
+function getUserById(userId) {
+    return chatUsers.find(user =>
+        sameId(user.id, userId)
+    );
 }
 
 function getOtherParticipant(conversation, currentUser) {
-    const otherId = conversation.participants.find(
-        id => !sameId(id, currentUser.id)
-    );
+    const otherId = sameId(
+        conversation.user1Id,
+        currentUser.id
+    )
+        ? conversation.user2Id
+        : conversation.user1Id;
 
-    return getChatUsers().find(user => sameId(user.id, otherId)) || {
+    return getUserById(otherId) || {
         id: otherId,
         name: "Usuario desconocido",
         email: ""
     };
-}
-
-function getConversationMessages(conversationId) {
-    return getChatMessages()
-        .filter(message => sameId(message.conversationId, conversationId))
-        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-}
-
-function getLastMessage(conversationId) {
-    const messages = getConversationMessages(conversationId);
-    return messages[messages.length - 1] || null;
 }
 
 function formatChatTime(dateValue) {
@@ -104,9 +77,160 @@ function formatChatTime(dateValue) {
     });
 }
 
+function getConversationMessages(conversationId) {
+    return chatMessages[conversationId] || [];
+}
+
+function getLastMessage(conversationId) {
+    const messages = getConversationMessages(conversationId);
+
+    return messages.length > 0
+        ? messages[messages.length - 1]
+        : null;
+}
+
+/* ---------- API ---------- */
+
+async function apiRequest(endpoint, options = {}) {
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}${endpoint}`,
+            {
+                ...options,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(options.headers || {})
+                }
+            }
+        );
+
+        const text = await response.text();
+
+        let data = null;
+
+        if (text) {
+            try {
+                data = JSON.parse(text);
+            } catch {
+                data = text;
+            }
+        }
+
+        if (!response.ok) {
+            const errorMessage =
+                typeof data === "string"
+                    ? data
+                    : data?.message ||
+                      data?.title ||
+                      "Ocurrió un error en la API.";
+
+            throw new Error(errorMessage);
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error de API:", error);
+
+        throw error;
+    }
+}
+
+/* ---------- USUARIOS ---------- */
+
+async function loadChatUsers(search = "") {
+    try {
+        const query = search.trim();
+
+        const endpoint = query
+            ? `/Users?search=${encodeURIComponent(query)}`
+            : "/Users";
+
+        const users = await apiRequest(endpoint);
+
+        chatUsers = Array.isArray(users)
+            ? users
+            : [];
+
+        return chatUsers;
+    } catch (error) {
+        console.error(
+            "No se pudieron cargar los usuarios:",
+            error
+        );
+
+        showChatNotice(
+            "No se pudieron cargar los usuarios."
+        );
+
+        return [];
+    }
+}
+
+/* ---------- CONVERSACIONES ---------- */
+
+async function loadChatConversations() {
+    const currentUser = getChatCurrentUser();
+
+    if (!currentUser) {
+        window.location.href = "auth.html";
+        return [];
+    }
+
+    try {
+        const conversations = await apiRequest(
+            `/Conversations/user/${currentUser.id}`
+        );
+
+        chatConversations = Array.isArray(conversations)
+            ? conversations
+            : [];
+
+        return chatConversations;
+    } catch (error) {
+        console.error(
+            "No se pudieron cargar las conversaciones:",
+            error
+        );
+
+        showChatNotice(
+            "No se pudieron cargar tus conversaciones."
+        );
+
+        return [];
+    }
+}
+
+async function loadConversationMessages(conversationId) {
+    try {
+        const messages = await apiRequest(
+            `/Messages/conversation/${conversationId}`
+        );
+
+        chatMessages[conversationId] =
+            Array.isArray(messages)
+                ? messages
+                : [];
+
+        return chatMessages[conversationId];
+    } catch (error) {
+        console.error(
+            "No se pudieron cargar los mensajes:",
+            error
+        );
+
+        chatMessages[conversationId] = [];
+
+        showChatNotice(
+            "No se pudieron cargar los mensajes."
+        );
+
+        return [];
+    }
+}
+
 /* ---------- ABRIR Y CERRAR CHAT ---------- */
 
-function openPrivateChats() {
+async function openPrivateChats() {
     const currentUser = getChatCurrentUser();
 
     if (!currentUser) {
@@ -120,6 +244,7 @@ function openPrivateChats() {
         console.error(
             "No se encontró #modalChat. Agrega el HTML del chat a index.html."
         );
+
         return;
     }
 
@@ -132,10 +257,15 @@ function openPrivateChats() {
 
     activeConversationId = null;
 
-    const searchInput = document.getElementById("chatUserSearch");
+    const searchInput =
+        document.getElementById("chatUserSearch");
+
     if (searchInput) {
         searchInput.value = "";
     }
+
+    await loadChatUsers();
+    await loadChatConversations();
 
     renderConversationList();
     renderUserSearch("");
@@ -145,7 +275,9 @@ function openPrivateChats() {
 function closePrivateChats() {
     const modal = document.getElementById("modalChat");
 
-    if (!modal) return;
+    if (!modal) {
+        return;
+    }
 
     if (typeof closeModal === "function") {
         closeModal("modalChat");
@@ -157,7 +289,7 @@ function closePrivateChats() {
 
 /* ---------- CREAR CONVERSACIONES ---------- */
 
-function startConversation(otherUserId) {
+async function startConversation(otherUserId) {
     const currentUser = getChatCurrentUser();
 
     if (!currentUser) {
@@ -166,57 +298,81 @@ function startConversation(otherUserId) {
     }
 
     if (sameId(currentUser.id, otherUserId)) {
-        showChatNotice("No puedes iniciar un chat contigo mismo.");
+        showChatNotice(
+            "No puedes iniciar un chat contigo mismo."
+        );
+
         return;
     }
 
-    const otherUser = getChatUsers().find(
-        user => sameId(user.id, otherUserId)
-    );
+    const otherUser = getUserById(otherUserId);
 
     if (!otherUser) {
-        showChatNotice("No se encontró ese usuario.");
+        showChatNotice(
+            "No se encontró ese usuario."
+        );
+
         return;
     }
 
-    const conversations = getChatConversations();
+    try {
+        /*
+           El backend se encarga de comprobar
+           si la conversación ya existe.
+        */
 
-    let conversation = conversations.find(item =>
-        Array.isArray(item.participants) &&
-        item.participants.length === 2 &&
-        item.participants.some(id => sameId(id, currentUser.id)) &&
-        item.participants.some(id => sameId(id, otherUserId))
-    );
+        const conversation = await apiRequest(
+            "/Conversations",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    user1Id: Number(currentUser.id),
+                    user2Id: Number(otherUserId)
+                })
+            }
+        );
 
-    if (!conversation) {
-        conversation = {
-            id: "conversation_" + Date.now() + "_" +
-                Math.random().toString(36).slice(2, 8),
-            participants: [currentUser.id, otherUser.id],
-            createdAt: new Date().toISOString()
-        };
+        activeConversationId = conversation.id;
 
-        conversations.push(conversation);
-        saveChatConversations(conversations);
-    }
+        await loadChatConversations();
 
-    activeConversationId = conversation.id;
+        await loadConversationMessages(
+            activeConversationId
+        );
 
-    renderConversationList();
-    renderActiveConversation();
+        renderConversationList();
+        renderActiveConversation();
 
-    const messageInput = document.getElementById("privateMessageInput");
-    if (messageInput) {
-        messageInput.focus();
+        const messageInput =
+            document.getElementById(
+                "privateMessageInput"
+            );
+
+        if (messageInput) {
+            messageInput.focus();
+        }
+    } catch (error) {
+        console.error(
+            "No se pudo crear la conversación:",
+            error
+        );
+
+        showChatNotice(
+            error.message ||
+            "No se pudo iniciar la conversación."
+        );
     }
 }
 
 /* ---------- BUSCAR USUARIOS ---------- */
 
-function renderUserSearch(query = "") {
-    const container = document.getElementById("chatSearchResults");
+async function renderUserSearch(query = "") {
+    const container =
+        document.getElementById("chatSearchResults");
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
     const currentUser = getChatCurrentUser();
 
@@ -225,56 +381,99 @@ function renderUserSearch(query = "") {
         return;
     }
 
-    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedQuery =
+        query.trim().toLowerCase();
 
-    const users = getChatUsers().filter(user => {
-        if (sameId(user.id, currentUser.id)) return false;
+    /*
+       Buscamos directamente en la API.
+    */
 
-        const name = getChatUserName(user).toLowerCase();
-        const email = String(user.email || "").toLowerCase();
+    const users = await loadChatUsers(query);
 
-        return !normalizedQuery ||
+    const filteredUsers = users.filter(user => {
+        if (sameId(user.id, currentUser.id)) {
+            return false;
+        }
+
+        if (!normalizedQuery) {
+            return true;
+        }
+
+        const name =
+            getChatUserName(user).toLowerCase();
+
+        const email =
+            String(user.email || "").toLowerCase();
+
+        return (
             name.includes(normalizedQuery) ||
-            email.includes(normalizedQuery);
+            email.includes(normalizedQuery)
+        );
     });
 
     container.replaceChildren();
 
-    if (users.length === 0) {
+    if (filteredUsers.length === 0) {
         const empty = document.createElement("p");
+
         empty.className = "chat-empty-state";
+
         empty.textContent = normalizedQuery
             ? "No se encontraron usuarios."
             : "Todavía no hay otros usuarios registrados.";
 
         container.appendChild(empty);
+
         return;
     }
 
-    users.forEach(user => {
-        const button = document.createElement("button");
+    filteredUsers.forEach(user => {
+        const button =
+            document.createElement("button");
+
         button.type = "button";
         button.className = "chat-user-result";
 
-        const avatar = document.createElement("span");
-        avatar.className = "chat-avatar";
-        avatar.textContent = getChatUserName(user).charAt(0).toUpperCase();
+        const avatar =
+            document.createElement("span");
 
-        const info = document.createElement("span");
+        avatar.className = "chat-avatar";
+
+        avatar.textContent =
+            getChatUserName(user)
+                .charAt(0)
+                .toUpperCase();
+
+        const info =
+            document.createElement("span");
+
         info.className = "chat-user-info";
 
-        const name = document.createElement("strong");
-        name.textContent = getChatUserName(user);
+        const name =
+            document.createElement("strong");
 
-        const email = document.createElement("small");
-        email.textContent = user.email || "";
+        name.textContent =
+            getChatUserName(user);
+
+        const email =
+            document.createElement("small");
+
+        email.textContent =
+            user.email || "";
 
         info.append(name, email);
-        button.append(avatar, info);
 
-        button.addEventListener("click", () => {
-            startConversation(user.id);
-        });
+        button.append(
+            avatar,
+            info
+        );
+
+        button.addEventListener(
+            "click",
+            () => {
+                startConversation(user.id);
+            }
+        );
 
         container.appendChild(button);
     });
@@ -283,287 +482,614 @@ function renderUserSearch(query = "") {
 function handleChatUserSearch(value) {
     clearTimeout(chatSearchTimeout);
 
-    chatSearchTimeout = setTimeout(() => {
-        renderUserSearch(value);
-    }, 150);
+    chatSearchTimeout = setTimeout(
+        () => {
+            renderUserSearch(value);
+        },
+        300
+    );
 }
 
 /* ---------- LISTA DE CONVERSACIONES ---------- */
 
-function renderConversationList() {
-    const container = document.getElementById("chatConversationList");
+async function renderConversationList() {
+    const container =
+        document.getElementById(
+            "chatConversationList"
+        );
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
-    const currentUser = getChatCurrentUser();
+    const currentUser =
+        getChatCurrentUser();
 
     if (!currentUser) {
         container.replaceChildren();
         return;
     }
 
-    const conversations = getChatConversations()
-        .filter(conversation =>
-            Array.isArray(conversation.participants) &&
-            conversation.participants.some(
-                id => sameId(id, currentUser.id)
+    if (!chatConversations.length) {
+        await loadChatConversations();
+    }
+
+    /*
+       Ordenamos por el último mensaje disponible.
+       Si todavía no lo hemos cargado, usamos CreatedAt.
+    */
+
+    const conversations =
+        [...chatConversations]
+            .filter(conversation =>
+                sameId(
+                    conversation.user1Id,
+                    currentUser.id
+                ) ||
+                sameId(
+                    conversation.user2Id,
+                    currentUser.id
+                )
             )
-        )
-        .sort((a, b) => {
-            const lastA = getLastMessage(a.id);
-            const lastB = getLastMessage(b.id);
+            .sort((a, b) => {
+                const lastA =
+                    getLastMessage(a.id);
 
-            const dateA = new Date(
-                lastA?.createdAt || a.createdAt
-            ).getTime();
+                const lastB =
+                    getLastMessage(b.id);
 
-            const dateB = new Date(
-                lastB?.createdAt || b.createdAt
-            ).getTime();
+                const dateA =
+                    new Date(
+                        lastA?.sentAt ||
+                        a.createdAt
+                    ).getTime();
 
-            return dateB - dateA;
-        });
+                const dateB =
+                    new Date(
+                        lastB?.sentAt ||
+                        b.createdAt
+                    ).getTime();
+
+                return dateB - dateA;
+            });
 
     container.replaceChildren();
 
     if (conversations.length === 0) {
-        const empty = document.createElement("p");
-        empty.className = "chat-empty-state";
-        empty.textContent = "Aún no tienes conversaciones. Busca un usuario para empezar.";
+        const empty =
+            document.createElement("p");
+
+        empty.className =
+            "chat-empty-state";
+
+        empty.textContent =
+            "Aún no tienes conversaciones. Busca un usuario para empezar.";
+
         container.appendChild(empty);
+
         return;
     }
 
-    conversations.forEach(conversation => {
-        const otherUser = getOtherParticipant(conversation, currentUser);
-        const lastMessage = getLastMessage(conversation.id);
+    /*
+       Cargamos mensajes para obtener
+       la vista previa del último mensaje.
+    */
 
-        const button = document.createElement("button");
+    for (const conversation of conversations) {
+        if (!chatMessages[conversation.id]) {
+            await loadConversationMessages(
+                conversation.id
+            );
+        }
+
+        const otherUser =
+            getOtherParticipant(
+                conversation,
+                currentUser
+            );
+
+        const lastMessage =
+            getLastMessage(
+                conversation.id
+            );
+
+        const button =
+            document.createElement("button");
+
         button.type = "button";
-        button.className = "chat-conversation-item";
+        button.className =
+            "chat-conversation-item";
 
-        if (sameId(conversation.id, activeConversationId)) {
+        if (
+            sameId(
+                conversation.id,
+                activeConversationId
+            )
+        ) {
             button.classList.add("selected");
         }
 
-        const avatar = document.createElement("span");
-        avatar.className = "chat-avatar";
-        avatar.textContent = getChatUserName(otherUser).charAt(0).toUpperCase();
+        const avatar =
+            document.createElement("span");
 
-        const info = document.createElement("span");
-        info.className = "chat-conversation-info";
+        avatar.className =
+            "chat-avatar";
 
-        const name = document.createElement("strong");
-        name.textContent = getChatUserName(otherUser);
+        avatar.textContent =
+            getChatUserName(otherUser)
+                .charAt(0)
+                .toUpperCase();
 
-        const preview = document.createElement("small");
-        preview.textContent = lastMessage
-            ? lastMessage.text
-            : "Inicia la conversación";
+        const info =
+            document.createElement("span");
 
-        const time = document.createElement("small");
-        time.className = "chat-conversation-time";
-        time.textContent = lastMessage
-            ? formatChatTime(lastMessage.createdAt)
-            : "";
+        info.className =
+            "chat-conversation-info";
 
-        info.append(name, preview);
-        button.append(avatar, info, time);
+        const name =
+            document.createElement("strong");
 
-        button.addEventListener("click", () => {
-            activeConversationId = conversation.id;
-            renderConversationList();
-            renderActiveConversation();
+        name.textContent =
+            getChatUserName(otherUser);
 
-            const input = document.getElementById("privateMessageInput");
-            if (input) input.focus();
-        });
+        const preview =
+            document.createElement("small");
+
+        preview.textContent =
+            lastMessage
+                ? lastMessage.content
+                : "Inicia la conversación";
+
+        const time =
+            document.createElement("small");
+
+        time.className =
+            "chat-conversation-time";
+
+        time.textContent =
+            lastMessage
+                ? formatChatTime(
+                    lastMessage.sentAt
+                )
+                : "";
+
+        info.append(
+            name,
+            preview
+        );
+
+        button.append(
+            avatar,
+            info,
+            time
+        );
+
+        button.addEventListener(
+            "click",
+            async () => {
+                activeConversationId =
+                    conversation.id;
+
+                await loadConversationMessages(
+                    conversation.id
+                );
+
+                renderConversationList();
+                renderActiveConversation();
+
+                const input =
+                    document.getElementById(
+                        "privateMessageInput"
+                    );
+
+                if (input) {
+                    input.focus();
+                }
+            }
+        );
 
         container.appendChild(button);
-    });
+    }
 }
 
 /* ---------- MOSTRAR MENSAJES ---------- */
 
-function renderActiveConversation() {
-    const messagesContainer = document.getElementById("privateChatMessages");
-    const title = document.getElementById("privateChatTitle");
-    const subtitle = document.getElementById("privateChatSubtitle");
-    const form = document.getElementById("privateChatForm");
-    const input = document.getElementById("privateMessageInput");
-    const sendButton = document.getElementById("privateSendButton");
-    const placeholder = document.getElementById("privateChatPlaceholder");
+async function renderActiveConversation() {
+    const messagesContainer =
+        document.getElementById(
+            "privateChatMessages"
+        );
 
-    if (!messagesContainer) return;
+    const title =
+        document.getElementById(
+            "privateChatTitle"
+        );
 
-    const currentUser = getChatCurrentUser();
+    const subtitle =
+        document.getElementById(
+            "privateChatSubtitle"
+        );
 
-    if (!currentUser) return;
+    const form =
+        document.getElementById(
+            "privateChatForm"
+        );
 
-    const conversation = getChatConversations().find(item =>
-        sameId(item.id, activeConversationId) &&
-        Array.isArray(item.participants) &&
-        item.participants.some(id => sameId(id, currentUser.id))
-    );
+    const input =
+        document.getElementById(
+            "privateMessageInput"
+        );
+
+    const sendButton =
+        document.getElementById(
+            "privateSendButton"
+        );
+
+    const placeholder =
+        document.getElementById(
+            "privateChatPlaceholder"
+        );
+
+    if (!messagesContainer) {
+        return;
+    }
+
+    const currentUser =
+        getChatCurrentUser();
+
+    if (!currentUser) {
+        return;
+    }
+
+    const conversation =
+        chatConversations.find(
+            item =>
+                sameId(
+                    item.id,
+                    activeConversationId
+                ) &&
+                (
+                    sameId(
+                        item.user1Id,
+                        currentUser.id
+                    ) ||
+                    sameId(
+                        item.user2Id,
+                        currentUser.id
+                    )
+                )
+        );
 
     messagesContainer.replaceChildren();
 
     if (!conversation) {
-        if (title) title.textContent = "Tus mensajes";
-        if (subtitle) subtitle.textContent = "Selecciona un chat para comenzar.";
-        if (form) form.hidden = true;
-        if (input) input.disabled = true;
-        if (sendButton) sendButton.disabled = true;
-        if (placeholder) placeholder.hidden = false;
+        if (title) {
+            title.textContent =
+                "Tus mensajes";
+        }
+
+        if (subtitle) {
+            subtitle.textContent =
+                "Selecciona un chat para comenzar.";
+        }
+
+        if (form) {
+            form.hidden = true;
+        }
+
+        if (input) {
+            input.disabled = true;
+        }
+
+        if (sendButton) {
+            sendButton.disabled = true;
+        }
+
+        if (placeholder) {
+            placeholder.hidden = false;
+        }
+
         return;
     }
 
-    const otherUser = getOtherParticipant(conversation, currentUser);
+    const otherUser =
+        getOtherParticipant(
+            conversation,
+            currentUser
+        );
 
-    if (title) title.textContent = getChatUserName(otherUser);
-    if (subtitle) subtitle.textContent = otherUser.email || "Conversación privada";
-    if (form) form.hidden = false;
-    if (input) input.disabled = false;
-    if (sendButton) sendButton.disabled = false;
-    if (placeholder) placeholder.hidden = true;
+    if (title) {
+        title.textContent =
+            getChatUserName(otherUser);
+    }
 
-    const messages = getConversationMessages(conversation.id);
+    if (subtitle) {
+        subtitle.textContent =
+            otherUser.email ||
+            "Conversación privada";
+    }
+
+    if (form) {
+        form.hidden = false;
+    }
+
+    if (input) {
+        input.disabled = false;
+    }
+
+    if (sendButton) {
+        sendButton.disabled = false;
+    }
+
+    if (placeholder) {
+        placeholder.hidden = true;
+    }
+
+    if (!chatMessages[conversation.id]) {
+        await loadConversationMessages(
+            conversation.id
+        );
+    }
+
+    const messages =
+        getConversationMessages(
+            conversation.id
+        );
 
     if (messages.length === 0) {
-        const empty = document.createElement("p");
-        empty.className = "chat-empty-state";
-        empty.textContent = "¡Di hola! Este es el comienzo de la conversación.";
+        const empty =
+            document.createElement("p");
+
+        empty.className =
+            "chat-empty-state";
+
+        empty.textContent =
+            "¡Di hola! Este es el comienzo de la conversación.";
+
         messagesContainer.appendChild(empty);
+
         return;
     }
 
     messages.forEach(message => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "private-message";
+        const wrapper =
+            document.createElement("div");
 
-        const isMine = sameId(message.senderId, currentUser.id);
-        wrapper.classList.add(isMine ? "my-message" : "other-message");
+        wrapper.className =
+            "private-message";
 
-        const bubble = document.createElement("div");
-        bubble.className = "private-message-bubble";
-        bubble.textContent = message.text;
+        const isMine =
+            sameId(
+                message.senderId,
+                currentUser.id
+            );
 
-        const time = document.createElement("time");
-        time.className = "private-message-time";
-        time.textContent = formatChatTime(message.createdAt);
+        wrapper.classList.add(
+            isMine
+                ? "my-message"
+                : "other-message"
+        );
 
-        wrapper.append(bubble, time);
-        messagesContainer.appendChild(wrapper);
+        const bubble =
+            document.createElement("div");
+
+        bubble.className =
+            "private-message-bubble";
+
+        bubble.textContent =
+            message.content;
+
+        const time =
+            document.createElement("time");
+
+        time.className =
+            "private-message-time";
+
+        time.textContent =
+            formatChatTime(
+                message.sentAt
+            );
+
+        wrapper.append(
+            bubble,
+            time
+        );
+
+        messagesContainer.appendChild(
+            wrapper
+        );
     });
 
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    messagesContainer.scrollTop =
+        messagesContainer.scrollHeight;
 }
 
 /* ---------- ENVIAR MENSAJES ---------- */
 
-function sendPrivateMessage(event) {
-    if (event) event.preventDefault();
+async function sendPrivateMessage(event) {
+    if (event) {
+        event.preventDefault();
+    }
 
-    const currentUser = getChatCurrentUser();
-    const input = document.getElementById("privateMessageInput");
+    const currentUser =
+        getChatCurrentUser();
 
-    if (!currentUser || !input || !activeConversationId) return;
+    const input =
+        document.getElementById(
+            "privateMessageInput"
+        );
 
-    const text = input.value.trim();
+    if (
+        !currentUser ||
+        !input ||
+        !activeConversationId
+    ) {
+        return;
+    }
 
-    if (!text) return;
+    const text =
+        input.value.trim();
+
+    if (!text) {
+        return;
+    }
 
     if (text.length > 2000) {
-        showChatNotice("El mensaje no puede superar los 2000 caracteres.");
+        showChatNotice(
+            "El mensaje no puede superar los 2000 caracteres."
+        );
+
         return;
     }
 
-    const conversation = getChatConversations().find(item =>
-        sameId(item.id, activeConversationId) &&
-        Array.isArray(item.participants) &&
-        item.participants.some(id => sameId(id, currentUser.id))
-    );
+    const conversation =
+        chatConversations.find(
+            item =>
+                sameId(
+                    item.id,
+                    activeConversationId
+                ) &&
+                (
+                    sameId(
+                        item.user1Id,
+                        currentUser.id
+                    ) ||
+                    sameId(
+                        item.user2Id,
+                        currentUser.id
+                    )
+                )
+        );
 
     if (!conversation) {
-        showChatNotice("No se encontró la conversación.");
+        showChatNotice(
+            "No se encontró la conversación."
+        );
+
         return;
     }
 
-    const messages = getChatMessages();
+    const sendButton =
+        document.getElementById(
+            "privateSendButton"
+        );
 
-    messages.push({
-        id: "message_" + Date.now() + "_" +
-            Math.random().toString(36).slice(2, 8),
-        conversationId: conversation.id,
-        senderId: currentUser.id,
-        text: text,
-        createdAt: new Date().toISOString()
-    });
+    if (sendButton) {
+        sendButton.disabled = true;
+    }
 
-    saveChatMessages(messages);
+    try {
+        await apiRequest(
+            "/Messages",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    conversationId:
+                        Number(
+                            conversation.id
+                        ),
 
-    input.value = "";
+                    senderId:
+                        Number(
+                            currentUser.id
+                        ),
 
-    renderConversationList();
-    renderActiveConversation();
-    renderUserSearch(
-        document.getElementById("chatUserSearch")?.value || ""
-    );
+                    content: text
+                })
+            }
+        );
 
-    input.focus();
+        input.value = "";
+
+        await loadConversationMessages(
+            conversation.id
+        );
+
+        await loadChatConversations();
+
+        renderConversationList();
+        await renderActiveConversation();
+
+        input.focus();
+    } catch (error) {
+        console.error(
+            "No se pudo enviar el mensaje:",
+            error
+        );
+
+        showChatNotice(
+            error.message ||
+            "No se pudo enviar el mensaje."
+        );
+    } finally {
+        if (sendButton) {
+            sendButton.disabled = false;
+        }
+    }
 }
 
 /* ---------- NOTIFICACIONES ---------- */
 
 function showChatNotice(message) {
-    const container = document.getElementById("notificationContainer");
+    const container =
+        document.getElementById(
+            "notificationContainer"
+        );
 
     if (container) {
-        const notice = document.createElement("div");
-        notice.className = "notification";
-        notice.textContent = message;
-        container.appendChild(notice);
+        const notice =
+            document.createElement("div");
 
-        window.setTimeout(() => notice.remove(), 3500);
+        notice.className =
+            "notification";
+
+        notice.textContent =
+            message;
+
+        container.appendChild(
+            notice
+        );
+
+        window.setTimeout(
+            () => notice.remove(),
+            3500
+        );
     } else {
         alert(message);
     }
 }
 
-/* ---------- ACTUALIZACIÓN LOCAL ---------- */
-
-/*
-   Permite refrescar la interfaz si otra pestaña del mismo
-   navegador modifica las conversaciones o los mensajes.
-*/
-
-window.addEventListener("storage", event => {
-    if (
-        event.key === CHAT_MESSAGES_KEY ||
-        event.key === CHAT_CONVERSATIONS_KEY ||
-        event.key === CHAT_USERS_KEY
-    ) {
-        renderConversationList();
-        renderUserSearch(
-            document.getElementById("chatUserSearch")?.value || ""
-        );
-        renderActiveConversation();
-    }
-});
-
 /* ---------- INICIALIZACIÓN ---------- */
 
-document.addEventListener("DOMContentLoaded", () => {
-    const searchInput = document.getElementById("chatUserSearch");
-    const form = document.getElementById("privateChatForm");
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        const searchInput =
+            document.getElementById(
+                "chatUserSearch"
+            );
 
-    if (searchInput) {
-        searchInput.addEventListener("input", event => {
-            handleChatUserSearch(event.target.value);
-        });
-    }
+        const form =
+            document.getElementById(
+                "privateChatForm"
+            );
 
-    if (form) {
-        form.addEventListener("submit", sendPrivateMessage);
+        if (searchInput) {
+            searchInput.addEventListener(
+                "input",
+                event => {
+                    handleChatUserSearch(
+                        event.target.value
+                    );
+                }
+            );
+        }
+
+        if (form) {
+            form.addEventListener(
+                "submit",
+                sendPrivateMessage
+            );
+        }
     }
-});
+);

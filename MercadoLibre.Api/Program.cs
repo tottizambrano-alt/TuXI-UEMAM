@@ -53,7 +53,9 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var db =
+        scope.ServiceProvider
+            .GetRequiredService<AppDbContext>();
 
     db.Database.EnsureCreated();
 }
@@ -71,8 +73,40 @@ app.UseSwaggerUI(c =>
         "MercadoLibre API v1"
     );
 
-    c.RoutePrefix = string.Empty;
+    c.RoutePrefix = "swagger";
 });
+
+// ========================================
+// ARCHIVOS ESTÁTICOS DEL FRONTEND
+// ========================================
+
+app.UseDefaultFiles(
+    new DefaultFilesOptions
+    {
+        FileProvider =
+            new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+                Path.Combine(
+                    builder.Environment.ContentRootPath,
+                    "..",
+                    "MercadoLibre.Web"
+                )
+            )
+    }
+);
+
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider =
+            new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+                Path.Combine(
+                    builder.Environment.ContentRootPath,
+                    "..",
+                    "MercadoLibre.Web"
+                )
+            )
+    }
+);
 
 // ========================================
 // MIDDLEWARE
