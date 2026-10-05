@@ -508,7 +508,9 @@ function renderProducts(products) {
      </div>
 
             `;
-
+            
+}).join(""); 
+    
 }
 
 
