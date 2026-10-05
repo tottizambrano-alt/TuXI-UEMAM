@@ -887,87 +887,55 @@ document.addEventListener("DOMContentLoaded", () => {
 // PUBLICAR PRODUCTO
 // ==================================================
 
-function publishProduct(event) {
+async function publishProduct(event) {
 
     event.preventDefault();
 
-
-    if (
-        typeof saveProduct !==
-        "function"
-    ) {
-
-        alert(
-            "No se pudo guardar el producto."
-        );
-
+    if (typeof saveProduct !== "function") {
+        alert("No se pudo guardar el producto.");
         return;
-
     }
 
+    const file = document.getElementById("pubImage").files[0];
+
+    let imageUrl;
+
+    try {
+        imageUrl = await fileToCompressedDataUrl(file);
+    } catch (error) {
+        alert(error.message);
+        return;
+    }
 
     const newProduct = {
-
-        title:
-            document.getElementById(
-                "pubTitle"
-            ).value.trim(),
-
-        category:
-            document.getElementById(
-                "pubCategory"
-            ).value,
-
-        price:
-            parseFloat(
-                document.getElementById(
-                    "pubPrice"
-                ).value
-            ),
-
-        condition:
-            document.getElementById(
-                "pubCondition"
-            ).value,
-
-        imageUrl:
-            document.getElementById(
-                "pubImage"
-            ).value.trim(),
-
-        description:
-            document.getElementById(
-                "pubDescription"
-            ).value.trim(),
-
-        freeShipping:
-            true,
-
-        isFull:
-            false
-
+        title: document.getElementById("pubTitle").value.trim(),
+        category: document.getElementById("pubCategory").value,
+        price: parseFloat(document.getElementById("pubPrice").value),
+        condition: document.getElementById("pubCondition").value,
+        imageUrl: imageUrl,
+        description: document.getElementById("pubDescription").value.trim(),
+        freeShipping: true,
+        isFull: false
     };
 
+    try {
+        saveProduct(newProduct);
+    } catch (error) {
+        alert(
+            "No se pudo guardar: el almacenamiento del navegador está lleno. " +
+            "Prueba con una imagen más pequeña."
+        );
+        return;
+    }
 
-    saveProduct(
-        newProduct
-    );
+    closeModal("modalPublish");
 
+    document.getElementById("publishForm").reset();
+    document.getElementById("pubImagePreview").style.display = "none";
 
-    closeModal(
-        "modalPublish"
-    );
+    alert("¡Producto publicado exitosamente!");
 
-
-    alert(
-        "¡Producto publicado exitosamente!"
-    );
-
-
-    renderProducts(
-        getProducts()
-    );
-
+    renderProducts(getProducts());
 }
 
 
