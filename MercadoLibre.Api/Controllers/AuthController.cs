@@ -456,11 +456,9 @@ namespace MercadoLibre.Api.Controllers
 
         public DateTime CreatedAt { get; set; }
     }
-}
 
 
-
-
+    
 [HttpPost("forgot-password")]
 public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
 {
@@ -476,6 +474,9 @@ public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto
 
     return Ok(new { message = "Se ha generado el token de recuperación.", token = token });
 }
+
+
+    // olvide contra
 
 [HttpPost("reset-password")]
 public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
@@ -493,6 +494,11 @@ public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
 
     return Ok(new { message = "Contraseña actualizada con éxito." });
 }
+}
+
+
+
+
 
 
 
