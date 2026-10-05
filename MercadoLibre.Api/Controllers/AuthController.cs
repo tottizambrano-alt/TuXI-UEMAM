@@ -457,3 +457,44 @@ namespace MercadoLibre.Api.Controllers
         public DateTime CreatedAt { get; set; }
     }
 }
+
+
+
+
+[HttpPost("forgot-password")]
+public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+{
+    var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+    if (user == null)
+        return BadRequest("El correo no está registrado.");
+
+    string token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+    user.ResetToken = token;
+    user.ResetTokenExpires = DateTime.UtcNow.AddMinutes(15);
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Se ha generado el token de recuperación.", token = token });
+}
+
+[HttpPost("reset-password")]
+public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+{
+    var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+    if (user == null || user.ResetToken != dto.Token || user.ResetTokenExpires < DateTime.UtcNow)
+        return BadRequest("El token es inválido o ha expirado.");
+
+    user.PasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
+    user.ResetToken = null;
+    user.ResetTokenExpires = null;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Contraseña actualizada con éxito." });
+}
+
+
+
+
+
