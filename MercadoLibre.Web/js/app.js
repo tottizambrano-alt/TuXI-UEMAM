@@ -493,13 +493,19 @@ function renderProducts(products) {
                                 : ""
                         }
 
-                        <div class="card-title">
-                            ${product.title}
-                        </div>
+               <div class="card-title">
+    ${product.title}
+</div>
 
-                    </div>
-
-                </div>
+<button
+    type="button"
+    class="btn-delete-product"
+    onclick="removeProduct(event, ${product.id})"
+>
+    <i class="fas fa-trash"></i> Eliminar
+</button>
+     </div>
+     </div>
 
             `;
 
@@ -685,7 +691,24 @@ function applyFilters() {
     renderProducts(products);
 
 }
+// ==================================================
+// ELIMINAR PRODUCTO DESDE LA TARJETA
+// ==================================================
 
+function removeProduct(event, id) {
+
+    // Evita que se abra el detalle del producto
+    event.stopPropagation();
+
+    if (!confirm("¿Seguro que quieres eliminar este producto?")) {
+        return;
+    }
+
+    deleteProduct(id);
+
+    renderProducts(getProducts());
+
+}
 
 // ==================================================
 // FILTRAR POR CATEGORÍA
