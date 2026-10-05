@@ -265,6 +265,10 @@ body {
     max-width: 500px;
     border-radius: 8px;
     position: relative;
+
+    /* NUEVO: que el contenido haga scroll dentro del modal */
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-content.large {
