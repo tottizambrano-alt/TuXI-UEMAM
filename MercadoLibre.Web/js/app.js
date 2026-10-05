@@ -503,8 +503,6 @@ function renderProducts(products) {
 
             `;
 
-        }).join("");
-
 }
 
 
