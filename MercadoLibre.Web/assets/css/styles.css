@@ -5,6 +5,22 @@
     font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
+.btn-delete-product {
+    margin-top: 8px;
+    padding: 5px 10px;
+    border: 1px solid #d33;
+    color: #d33;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.btn-delete-product:hover {
+    background: #d33;
+    color: #fff;
+} 
+
 body {
     background-color: #ebebeb;
     color: #333;
