@@ -1,4 +1,4 @@
-```csharp
+
 using System.Security.Cryptography;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -641,7 +641,6 @@ namespace MercadoLibre.Api.Controllers
         public DateTime CreatedAt { get; set; }
     }
 }
-```
 
 
 
