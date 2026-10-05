@@ -807,6 +807,81 @@ function closeModal(id) {
 
 }
 
+// ==================================================
+// COMPRIMIR IMAGEN SUBIDA
+// ==================================================
+// Reduce la imagen a máx. 800 px y la convierte a texto
+// para guardarla en el navegador (el límite es ~5 MB).
+
+function fileToCompressedDataUrl(file, maxSize = 800, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+
+        if (!file || !file.type.startsWith("image/")) {
+            reject(new Error("El archivo seleccionado no es una imagen."));
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onerror = () =>
+            reject(new Error("No se pudo leer el archivo."));
+
+        reader.onload = () => {
+            const img = new Image();
+
+            img.onerror = () =>
+                reject(new Error("No se pudo cargar la imagen."));
+
+            img.onload = () => {
+                const scale = Math.min(
+                    1,
+                    maxSize / Math.max(img.width, img.height)
+                );
+
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+
+                const ctx = canvas.getContext("2d");
+
+                // Fondo blanco para PNG con transparencia
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                resolve(canvas.toDataURL("image/jpeg", quality));
+            };
+
+            img.src = reader.result;
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+
+// ==================================================
+// VISTA PREVIA DE LA IMAGEN
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("pubImage");
+    const preview = document.getElementById("pubImagePreview");
+
+    if (!input || !preview) return;
+
+    input.addEventListener("change", () => {
+        const file = input.files[0];
+
+        if (!file) {
+            preview.style.display = "none";
+            return;
+        }
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    });
+});
 
 // ==================================================
 // PUBLICAR PRODUCTO
