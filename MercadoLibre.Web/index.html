@@ -756,25 +756,23 @@
 
 
 
-					<!-- IMAGEN -->
+		<!-- IMAGEN -->
+<div class="form-group">
+    <label for="pubImage">Imagen del producto</label>
 
-					<div class="form-group">
+    <input
+        type="file"
+        id="pubImage"
+        accept="image/*"
+        required
+    />
 
-						<label for="pubImage">
-							URL de la Imagen
-						</label>
-
-
-						<input
-							type="url"
-							id="pubImage"
-							required=""
-							placeholder="https://..."
-							value="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500"
-                    />
-
-					</div>
-
+    <img
+        id="pubImagePreview"
+        alt="Vista previa"
+        style="display:none; max-width:100%; max-height:180px; margin-top:10px; border-radius:8px; object-fit:contain;"
+    />
+</div>
 
 
 					<!-- DESCRIPCIÓN -->
