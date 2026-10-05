@@ -1,3 +1,4 @@
+```csharp
 using System.Security.Cryptography;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -34,29 +35,22 @@ namespace MercadoLibre.Api.Controllers
         {
             if (string.IsNullOrWhiteSpace(request.Name))
             {
-                return BadRequest(
-                    "El nombre es obligatorio."
-                );
+                return BadRequest("El nombre es obligatorio.");
             }
 
             if (string.IsNullOrWhiteSpace(request.Email))
             {
-                return BadRequest(
-                    "El correo es obligatorio."
-                );
+                return BadRequest("El correo es obligatorio.");
             }
 
             if (string.IsNullOrWhiteSpace(request.Password))
             {
-                return BadRequest(
-                    "La contraseña es obligatoria."
-                );
+                return BadRequest("La contraseña es obligatoria.");
             }
 
-            var email =
-                request.Email
-                    .Trim()
-                    .ToLowerInvariant();
+            var email = request.Email
+                .Trim()
+                .ToLowerInvariant();
 
             if (!IsInstitutionalEmail(email))
             {
@@ -65,16 +59,16 @@ namespace MercadoLibre.Api.Controllers
                 );
             }
 
-            if (request.Password.Length < 4)
+            // Contraseña mínima de 8 caracteres
+            if (request.Password.Length < 8)
             {
                 return BadRequest(
-                    "La contraseña debe tener al menos 4 caracteres."
+                    "La contraseña debe tener al menos 8 caracteres."
                 );
             }
 
-            var emailExists =
-                await _context.Users
-                    .AnyAsync(u => u.Email == email);
+            var emailExists = await _context.Users
+                .AnyAsync(u => u.Email == email);
 
             if (emailExists)
             {
@@ -87,7 +81,10 @@ namespace MercadoLibre.Api.Controllers
             {
                 Name = request.Name.Trim(),
                 Email = email,
+
+                // Guardamos la contraseña usando PBKDF2
                 Password = HashPassword(request.Password),
+
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -117,10 +114,9 @@ namespace MercadoLibre.Api.Controllers
                 );
             }
 
-            var email =
-                request.Email
-                    .Trim()
-                    .ToLowerInvariant();
+            var email = request.Email
+                .Trim()
+                .ToLowerInvariant();
 
             if (!IsInstitutionalEmail(email))
             {
@@ -129,11 +125,8 @@ namespace MercadoLibre.Api.Controllers
                 );
             }
 
-            var user =
-                await _context.Users
-                    .FirstOrDefaultAsync(
-                        u => u.Email == email
-                    );
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
             {
@@ -142,28 +135,26 @@ namespace MercadoLibre.Api.Controllers
                 );
             }
 
-            // ----------------------------------------------
-            // CONTRASEÑA HASH
-            // ----------------------------------------------
+            // ==================================================
+            // VERIFICAR CONTRASEÑA HASHEADA
+            // ==================================================
 
-            if (
-                VerifyPassword(
-                    request.Password,
-                    user.Password
-                )
-            )
+            if (VerifyPassword(request.Password, user.Password))
             {
                 return Ok(ToResponse(user));
             }
 
-            // ----------------------------------------------
+            // ==================================================
             // COMPATIBILIDAD CON CUENTAS ANTIGUAS
-            // ----------------------------------------------
+            // ==================================================
+            //
+            // Si existe alguna cuenta antigua que tenga la
+            // contraseña guardada sin hash, la convertimos
+            // automáticamente al nuevo formato.
 
             if (user.Password == request.Password)
             {
-                user.Password =
-                    HashPassword(request.Password);
+                user.Password = HashPassword(request.Password);
 
                 await _context.SaveChangesAsync();
 
@@ -217,9 +208,9 @@ namespace MercadoLibre.Api.Controllers
                 );
             }
 
-            // ----------------------------------------------
+            // ==================================================
             // CORREO VERIFICADO
-            // ----------------------------------------------
+            // ==================================================
 
             if (!payload.EmailVerified)
             {
@@ -235,14 +226,13 @@ namespace MercadoLibre.Api.Controllers
                 );
             }
 
-            var email =
-                payload.Email
-                    .Trim()
-                    .ToLowerInvariant();
+            var email = payload.Email
+                .Trim()
+                .ToLowerInvariant();
 
-            // ----------------------------------------------
+            // ==================================================
             // DOMINIO INSTITUCIONAL
-            // ----------------------------------------------
+            // ==================================================
 
             if (!IsInstitutionalEmail(email))
             {
@@ -251,9 +241,9 @@ namespace MercadoLibre.Api.Controllers
                 );
             }
 
-            // ----------------------------------------------
+            // ==================================================
             // GOOGLE WORKSPACE
-            // ----------------------------------------------
+            // ==================================================
 
             if (
                 string.IsNullOrWhiteSpace(payload.HostedDomain) ||
@@ -268,19 +258,18 @@ namespace MercadoLibre.Api.Controllers
                 );
             }
 
-            // ----------------------------------------------
+            // ==================================================
             // BUSCAR USUARIO
-            // ----------------------------------------------
+            // ==================================================
 
-            var user =
-                await _context.Users
-                    .FirstOrDefaultAsync(
-                        u => u.Email == email
-                    );
+            var user = await _context.Users
+                .FirstOrDefaultAsync(
+                    u => u.Email == email
+                );
 
-            // ----------------------------------------------
+            // ==================================================
             // CREAR USUARIO SI NO EXISTE
-            // ----------------------------------------------
+            // ==================================================
 
             if (user == null)
             {
@@ -308,6 +297,169 @@ namespace MercadoLibre.Api.Controllers
             return Ok(
                 ToResponse(user)
             );
+        }
+
+
+        // ==================================================
+        // RECUPERAR CONTRASEÑA
+        // ==================================================
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(
+            [FromBody] ForgotPasswordRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest(
+                    "El correo es obligatorio."
+                );
+            }
+
+            var email = request.Email
+                .Trim()
+                .ToLowerInvariant();
+
+            if (!IsInstitutionalEmail(email))
+            {
+                return BadRequest(
+                    "Solo se permiten correos institucionales @uemam.edu.ec."
+                );
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(
+                    u => u.Email == email
+                );
+
+            if (user == null)
+            {
+                return BadRequest(
+                    "El correo no está registrado."
+                );
+            }
+
+            // Generar token seguro de 64 bytes
+            string token =
+                Convert.ToHexString(
+                    RandomNumberGenerator.GetBytes(64)
+                );
+
+            user.ResetToken = token;
+
+            // El token será válido durante 15 minutos
+            user.ResetTokenExpires =
+                DateTime.UtcNow.AddMinutes(15);
+
+            await _context.SaveChangesAsync();
+
+            // IMPORTANTE:
+            // Para desarrollo devolvemos el token.
+            // En producción debe enviarse por correo.
+            return Ok(new
+            {
+                message =
+                    "Se ha generado el token de recuperación.",
+
+                token = token
+            });
+        }
+
+
+        // ==================================================
+        // CAMBIAR CONTRASEÑA
+        // ==================================================
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(
+            [FromBody] ResetPasswordRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest(
+                    "El correo es obligatorio."
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Token))
+            {
+                return BadRequest(
+                    "El token es obligatorio."
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return BadRequest(
+                    "La nueva contraseña es obligatoria."
+                );
+            }
+
+            if (request.NewPassword.Length < 8)
+            {
+                return BadRequest(
+                    "La contraseña debe tener al menos 8 caracteres."
+                );
+            }
+
+            var email = request.Email
+                .Trim()
+                .ToLowerInvariant();
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(
+                    u => u.Email == email
+                );
+
+            if (user == null)
+            {
+                return BadRequest(
+                    "El correo no está registrado."
+                );
+            }
+
+            // ==================================================
+            // VALIDAR TOKEN
+            // ==================================================
+
+            if (user.ResetToken != request.Token)
+            {
+                return BadRequest(
+                    "El token es inválido."
+                );
+            }
+
+            if (
+                user.ResetTokenExpires == null ||
+                user.ResetTokenExpires < DateTime.UtcNow
+            )
+            {
+                return BadRequest(
+                    "El token ha expirado."
+                );
+            }
+
+            // ==================================================
+            // GUARDAR NUEVA CONTRASEÑA
+            // ==================================================
+
+            // IMPORTANTE:
+            // Usamos el mismo sistema PBKDF2 que utiliza
+            // el registro y el login.
+
+            user.Password =
+                HashPassword(request.NewPassword);
+
+            // El token solo puede utilizarse una vez
+            user.ResetToken = null;
+            user.ResetTokenExpires = null;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message =
+                    "Contraseña actualizada con éxito."
+            });
         }
 
 
@@ -415,7 +567,7 @@ namespace MercadoLibre.Api.Controllers
 
 
     // ======================================================
-    // REQUESTS
+    // REQUEST: REGISTRO
     // ======================================================
 
     public class RegisterRequest
@@ -428,6 +580,10 @@ namespace MercadoLibre.Api.Controllers
     }
 
 
+    // ======================================================
+    // REQUEST: LOGIN
+    // ======================================================
+
     public class LoginRequest
     {
         public string Email { get; set; } = string.Empty;
@@ -436,9 +592,37 @@ namespace MercadoLibre.Api.Controllers
     }
 
 
+    // ======================================================
+    // REQUEST: GOOGLE
+    // ======================================================
+
     public class GoogleLoginRequest
     {
         public string Credential { get; set; } = string.Empty;
+    }
+
+
+    // ======================================================
+    // REQUEST: RECUPERAR CONTRASEÑA
+    // ======================================================
+
+    public class ForgotPasswordRequest
+    {
+        public string Email { get; set; } = string.Empty;
+    }
+
+
+    // ======================================================
+    // REQUEST: NUEVA CONTRASEÑA
+    // ======================================================
+
+    public class ResetPasswordRequest
+    {
+        public string Email { get; set; } = string.Empty;
+
+        public string Token { get; set; } = string.Empty;
+
+        public string NewPassword { get; set; } = string.Empty;
     }
 
 
@@ -456,46 +640,8 @@ namespace MercadoLibre.Api.Controllers
 
         public DateTime CreatedAt { get; set; }
     }
-
-
-    
-[HttpPost("forgot-password")]
-public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
-{
-    var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-    if (user == null)
-        return BadRequest("El correo no está registrado.");
-
-    string token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
-    user.ResetToken = token;
-    user.ResetTokenExpires = DateTime.UtcNow.AddMinutes(15);
-
-    await _context.SaveChangesAsync();
-
-    return Ok(new { message = "Se ha generado el token de recuperación.", token = token });
 }
-
-
-    // olvide contra
-
-[HttpPost("reset-password")]
-public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
-{
-    var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-
-    if (user == null || user.ResetToken != dto.Token || user.ResetTokenExpires < DateTime.UtcNow)
-        return BadRequest("El token es inválido o ha expirado.");
-
-    user.PasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
-    user.ResetToken = null;
-    user.ResetTokenExpires = null;
-
-    await _context.SaveChangesAsync();
-
-    return Ok(new { message = "Contraseña actualizada con éxito." });
-}
-}
-
+```
 
 
 
