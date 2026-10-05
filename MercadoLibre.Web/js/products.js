@@ -78,3 +78,20 @@ function saveProduct(product) {
 
     return product;
 }
+
+// ==================================================
+// ELIMINAR PRODUCTO
+// ==================================================
+
+function deleteProduct(id) {
+
+    const products = getProducts().filter(function (p) {
+        return String(p.id) !== String(id);
+    });
+
+    localStorage.setItem(
+        "ml_products",
+        JSON.stringify(products)
+    );
+
+}
